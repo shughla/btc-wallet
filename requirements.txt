@@ -1,0 +1,9 @@
+isort
+flake8
+pytest
+codetiming
+fastapi
+pydantic
+uvicorn
+starlette
+requests
