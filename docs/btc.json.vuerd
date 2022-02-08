@@ -1,0 +1,477 @@
+{
+  "canvas": {
+    "version": "2.2.11",
+    "width": 2000,
+    "height": 2000,
+    "scrollTop": -119.16666193140901,
+    "scrollLeft": -105.8333291278947,
+    "zoomLevel": 0.9,
+    "show": {
+      "tableComment": true,
+      "columnComment": true,
+      "columnDataType": true,
+      "columnDefault": true,
+      "columnAutoIncrement": true,
+      "columnPrimaryKey": true,
+      "columnUnique": true,
+      "columnNotNull": true,
+      "relationship": true
+    },
+    "database": "SQLite",
+    "databaseName": "btc-wallet",
+    "canvasType": "@vuerd/builtin-sql-ddl",
+    "language": "Java",
+    "tableCase": "pascalCase",
+    "columnCase": "camelCase",
+    "highlightTheme": "VS2015",
+    "bracketType": "none",
+    "setting": {
+      "relationshipDataTypeSync": true,
+      "relationshipOptimization": false,
+      "columnOrder": [
+        "columnName",
+        "columnDataType",
+        "columnNotNull",
+        "columnUnique",
+        "columnAutoIncrement",
+        "columnDefault",
+        "columnComment"
+      ]
+    },
+    "pluginSerializationMap": {}
+  },
+  "table": {
+    "tables": [
+      {
+        "name": "user",
+        "comment": "",
+        "columns": [
+          {
+            "name": "user_id",
+            "comment": "",
+            "dataType": "INTEGER",
+            "default": "",
+            "option": {
+              "autoIncrement": true,
+              "primaryKey": true,
+              "unique": true,
+              "notNull": true
+            },
+            "ui": {
+              "active": false,
+              "pk": true,
+              "fk": false,
+              "pfk": false,
+              "widthName": 60,
+              "widthComment": 60,
+              "widthDataType": 60,
+              "widthDefault": 60
+            },
+            "id": "5773a26a-482c-4e20-9c54-11e62b5863b7"
+          },
+          {
+            "name": "api_key",
+            "comment": "",
+            "dataType": "TEXT",
+            "default": "",
+            "option": {
+              "autoIncrement": false,
+              "primaryKey": false,
+              "unique": true,
+              "notNull": true
+            },
+            "ui": {
+              "active": false,
+              "pk": false,
+              "fk": false,
+              "pfk": false,
+              "widthName": 60,
+              "widthComment": 60,
+              "widthDataType": 60,
+              "widthDefault": 60
+            },
+            "id": "c7f0037b-52d3-4a25-bd90-da67b043e040"
+          }
+        ],
+        "ui": {
+          "active": false,
+          "left": 46.1459,
+          "top": 89.2705,
+          "zIndex": 59,
+          "widthName": 60,
+          "widthComment": 60,
+          "color": "#42FF00"
+        },
+        "visible": true,
+        "id": "ddc706b8-e7a4-4432-b70f-89d3f9f3eb4c"
+      },
+      {
+        "name": "wallet",
+        "comment": "",
+        "columns": [
+          {
+            "name": "wallet_id",
+            "comment": "",
+            "dataType": "INTEGER",
+            "default": "",
+            "option": {
+              "autoIncrement": true,
+              "primaryKey": true,
+              "unique": true,
+              "notNull": true
+            },
+            "ui": {
+              "active": false,
+              "pk": true,
+              "fk": false,
+              "pfk": false,
+              "widthName": 60,
+              "widthComment": 60,
+              "widthDataType": 60,
+              "widthDefault": 60
+            },
+            "id": "4f48f008-1e0b-4a6b-8b8c-7d6b789de397"
+          },
+          {
+            "name": "ballance_satoshi",
+            "comment": "",
+            "dataType": "INTEGER",
+            "default": "0",
+            "option": {
+              "autoIncrement": false,
+              "primaryKey": false,
+              "unique": false,
+              "notNull": true
+            },
+            "ui": {
+              "active": false,
+              "pk": false,
+              "fk": false,
+              "pfk": false,
+              "widthName": 98.84619140625,
+              "widthComment": 60,
+              "widthDataType": 60,
+              "widthDefault": 60
+            },
+            "id": "c736f1c2-b709-46eb-8873-fca63bde51b3"
+          },
+          {
+            "name": "user_id",
+            "comment": "",
+            "dataType": "INTEGER",
+            "default": "",
+            "option": {
+              "autoIncrement": false,
+              "primaryKey": false,
+              "unique": false,
+              "notNull": true
+            },
+            "ui": {
+              "active": false,
+              "pk": false,
+              "fk": true,
+              "pfk": false,
+              "widthName": 60,
+              "widthComment": 60,
+              "widthDataType": 60,
+              "widthDefault": 60
+            },
+            "id": "b8b85c4e-49cd-49c6-8fe9-866bc500baf1"
+          }
+        ],
+        "ui": {
+          "active": false,
+          "left": 41.2158,
+          "top": 300.2536,
+          "zIndex": 95,
+          "widthName": 60,
+          "widthComment": 60,
+          "color": "#008EFF"
+        },
+        "visible": true,
+        "id": "0defbda8-1301-43e6-b93b-9334d0e03c54"
+      },
+      {
+        "name": "transaction",
+        "comment": "",
+        "columns": [
+          {
+            "name": "transaction_id",
+            "comment": "",
+            "dataType": "INTEGER",
+            "default": "",
+            "option": {
+              "autoIncrement": true,
+              "primaryKey": true,
+              "unique": true,
+              "notNull": true
+            },
+            "ui": {
+              "active": false,
+              "pk": true,
+              "fk": false,
+              "pfk": false,
+              "widthName": 82.93896484375,
+              "widthComment": 60,
+              "widthDataType": 60,
+              "widthDefault": 60
+            },
+            "id": "47211703-6c50-4b43-b6ef-731ac6230534"
+          },
+          {
+            "name": "from_wallet",
+            "comment": "",
+            "dataType": "INTEGER",
+            "default": "",
+            "option": {
+              "autoIncrement": false,
+              "primaryKey": false,
+              "unique": false,
+              "notNull": true
+            },
+            "ui": {
+              "active": false,
+              "pk": false,
+              "fk": true,
+              "pfk": false,
+              "widthName": 68.46630859375,
+              "widthComment": 60,
+              "widthDataType": 60,
+              "widthDefault": 60
+            },
+            "id": "f0cc0c67-faaf-4969-92bf-f67bbc67d664"
+          },
+          {
+            "name": "to_wallet",
+            "comment": "",
+            "dataType": "INTEGER",
+            "default": "",
+            "option": {
+              "autoIncrement": false,
+              "primaryKey": false,
+              "unique": false,
+              "notNull": true
+            },
+            "ui": {
+              "active": false,
+              "pk": false,
+              "fk": true,
+              "pfk": false,
+              "widthName": 60,
+              "widthComment": 60,
+              "widthDataType": 60,
+              "widthDefault": 60
+            },
+            "id": "afe6d548-4e19-4fbc-80ec-bc437f1c8850"
+          },
+          {
+            "name": "amount",
+            "comment": "",
+            "dataType": "INTEGER",
+            "default": "",
+            "option": {
+              "autoIncrement": false,
+              "primaryKey": false,
+              "unique": false,
+              "notNull": true
+            },
+            "ui": {
+              "active": false,
+              "pk": false,
+              "fk": false,
+              "pfk": false,
+              "widthName": 60,
+              "widthComment": 60,
+              "widthDataType": 60,
+              "widthDefault": 60
+            },
+            "id": "19a5eee6-bdc5-470f-a750-eaf71f9eaae2"
+          },
+          {
+            "name": "commission",
+            "comment": "",
+            "dataType": "INTEGER",
+            "default": "0",
+            "option": {
+              "autoIncrement": false,
+              "primaryKey": false,
+              "unique": false,
+              "notNull": false
+            },
+            "ui": {
+              "active": false,
+              "pk": false,
+              "fk": false,
+              "pfk": false,
+              "widthName": 70.62451171875,
+              "widthComment": 60,
+              "widthDataType": 60,
+              "widthDefault": 60
+            },
+            "id": "f47f3688-fb2e-438f-8b4e-f40f4f0bf018"
+          }
+        ],
+        "ui": {
+          "active": false,
+          "left": 613.2871,
+          "top": 275.3237,
+          "zIndex": 92,
+          "widthName": 65.5908203125,
+          "widthComment": 60,
+          "color": "#ECFF00"
+        },
+        "visible": true,
+        "id": "99ca2a64-5dc2-4d4c-a3fd-9cc2d9a8d1fd"
+      },
+      {
+        "name": "statistics",
+        "comment": "KEY VALUE",
+        "columns": [
+          {
+            "name": "profit",
+            "comment": "",
+            "dataType": "INTEGER",
+            "default": "",
+            "option": {
+              "autoIncrement": false,
+              "primaryKey": false,
+              "unique": false,
+              "notNull": false
+            },
+            "ui": {
+              "active": false,
+              "pk": false,
+              "fk": false,
+              "pfk": false,
+              "widthName": 60,
+              "widthComment": 60,
+              "widthDataType": 60,
+              "widthDefault": 60
+            },
+            "id": "536066fa-67e6-4923-a06f-66b65abb3187"
+          },
+          {
+            "name": "total_transactions",
+            "comment": "",
+            "dataType": "INTEGER",
+            "default": "",
+            "option": {
+              "autoIncrement": false,
+              "primaryKey": false,
+              "unique": false,
+              "notNull": false
+            },
+            "ui": {
+              "active": false,
+              "pk": false,
+              "fk": false,
+              "pfk": false,
+              "widthName": 103.892578125,
+              "widthComment": 60,
+              "widthDataType": 60,
+              "widthDefault": 60
+            },
+            "id": "5eaa9bad-82c6-4be5-be83-1a56e4003961"
+          }
+        ],
+        "ui": {
+          "active": false,
+          "left": 517.7429,
+          "top": 73.7496,
+          "zIndex": 79,
+          "widthName": 60,
+          "widthComment": 73.29052734375,
+          "color": "#FF0000"
+        },
+        "visible": true,
+        "id": "03040516-43c2-4245-a302-3508a86bfea8"
+      }
+    ],
+    "indexes": []
+  },
+  "memo": {
+    "memos": []
+  },
+  "relationship": {
+    "relationships": [
+      {
+        "identification": false,
+        "relationshipType": "OneN",
+        "startRelationshipType": "Dash",
+        "start": {
+          "tableId": "ddc706b8-e7a4-4432-b70f-89d3f9f3eb4c",
+          "columnIds": [
+            "5773a26a-482c-4e20-9c54-11e62b5863b7"
+          ],
+          "x": 243.14589999999998,
+          "y": 199.2705,
+          "direction": "bottom"
+        },
+        "end": {
+          "tableId": "0defbda8-1301-43e6-b93b-9334d0e03c54",
+          "columnIds": [
+            "b8b85c4e-49cd-49c6-8fe9-866bc500baf1"
+          ],
+          "x": 257.638895703125,
+          "y": 300.2536,
+          "direction": "top"
+        },
+        "constraintName": "fk_user_to_wallet",
+        "visible": true,
+        "id": "158e0112-691a-479a-9f0f-c12f6b643f9f"
+      },
+      {
+        "identification": false,
+        "relationshipType": "OneN",
+        "startRelationshipType": "Dash",
+        "start": {
+          "tableId": "0defbda8-1301-43e6-b93b-9334d0e03c54",
+          "columnIds": [
+            "4f48f008-1e0b-4a6b-8b8c-7d6b789de397"
+          ],
+          "x": 474.06199140625,
+          "y": 332.8786,
+          "direction": "right"
+        },
+        "end": {
+          "tableId": "99ca2a64-5dc2-4d4c-a3fd-9cc2d9a8d1fd",
+          "columnIds": [
+            "f0cc0c67-faaf-4969-92bf-f67bbc67d664"
+          ],
+          "x": 613.2871,
+          "y": 318.1987,
+          "direction": "left"
+        },
+        "constraintName": "fk_wallet_to_transaction",
+        "visible": true,
+        "id": "246754a6-9988-4c94-9635-f7acdbd34b7b"
+      },
+      {
+        "identification": false,
+        "relationshipType": "ZeroOne",
+        "startRelationshipType": "Dash",
+        "start": {
+          "tableId": "0defbda8-1301-43e6-b93b-9334d0e03c54",
+          "columnIds": [
+            "4f48f008-1e0b-4a6b-8b8c-7d6b789de397"
+          ],
+          "x": 474.06199140625,
+          "y": 398.1286,
+          "direction": "right"
+        },
+        "end": {
+          "tableId": "99ca2a64-5dc2-4d4c-a3fd-9cc2d9a8d1fd",
+          "columnIds": [
+            "afe6d548-4e19-4fbc-80ec-bc437f1c8850"
+          ],
+          "x": 613.2871,
+          "y": 403.9487,
+          "direction": "left"
+        },
+        "constraintName": "fk_wallet_to_transaction",
+        "visible": true,
+        "id": "b9262305-a041-4b5e-853c-a6777c60f4d8"
+      }
+    ]
+  }
+}
