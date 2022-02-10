@@ -1,7 +1,6 @@
-from sqlite3 import Connection, IntegrityError
+from sqlite3 import Connection
 from typing import Optional
 
-from app.core.exceptions import DuplicateUserApiKeyException
 from app.core.models.user import User
 from app.core.repositories import IUserRepository
 from app.core.security.api_key_generator import ApiKey
@@ -35,7 +34,6 @@ class SQLiteUserRepository(IUserRepository):
             {"api_key": api_key.api_key},
         )
         row = cursor.fetchone()
-        print(row)
         cursor.close()
         if row is None:
             return None

@@ -4,14 +4,15 @@ from typing import Any
 
 from starlette.testclient import TestClient
 
-from app.core.facade import InMemoryWalletRepository, SQLiteWalletRepository
 from app.core.interceptors.wallet import WalletInterceptor
 from app.core.models.user import User
 from app.core.models.wallet import DefaultWallet
 from app.core.repositories import IWalletRepository
 from app.core.security.api_key_generator import ApiKey
 from app.infra.repositories.inmemory.user import InMemoryUserRepository
+from app.infra.repositories.inmemory.wallet import InMemoryWalletRepository
 from app.infra.repositories.sqlite.user import SQLiteUserRepository
+from app.infra.repositories.sqlite.wallet import SQLiteWalletRepository
 from app.runner.setup import TestAppFactory
 
 appFactory = TestAppFactory()
