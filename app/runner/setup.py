@@ -4,8 +4,9 @@ from typing import Protocol
 
 from fastapi import FastAPI
 
-from app.core.facade import Facade
+from app.core.facade import Facade, InMemoryWalletRepository, SQLiteWalletRepository
 from app.core.interceptors.user import UserInterceptor
+from app.core.interceptors.wallet import WalletInterceptor
 from app.core.security.api_key_generator import ApiKeyGenerator
 from app.infra.fastapi.api import api_router
 from app.infra.repositories.inmemory.user import InMemoryUserRepository
@@ -25,9 +26,8 @@ class DevelopmentAppFactory(AppFactory):
     def create_app(self) -> FastAPI:
         app = FastAPI()
         app.state.facade = Facade(
-            UserInterceptor(
-                SQLiteUserRepository(get_db_connection()), ApiKeyGenerator()
-            )
+            UserInterceptor(SQLiteUserRepository(get_db_connection())),
+            WalletInterceptor(SQLiteWalletRepository(get_db_connection())),
         )
         app.include_router(api_router)
         return app
@@ -37,7 +37,8 @@ class TestAppFactory(AppFactory):
     def create_app(self) -> FastAPI:
         app = FastAPI()
         app.state.facade = Facade(
-            UserInterceptor(InMemoryUserRepository(), ApiKeyGenerator())
+            UserInterceptor(InMemoryUserRepository(), ApiKeyGenerator()),
+            WalletInterceptor(InMemoryWalletRepository()),
         )
         app.include_router(api_router)
         return app

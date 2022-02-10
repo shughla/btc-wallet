@@ -22,14 +22,11 @@ class SQLiteUserRepository(IUserRepository):
 
     def add_user(self, api_key: ApiKey) -> None:
         cursor = self.connection.cursor()
-        try:
-            cursor.execute(
-                "insert into user(api_key) values(:api_key);",
-                {"api_key": api_key.api_key},
-            )
-            cursor.close()
-        except IntegrityError:
-            raise DuplicateUserApiKeyException()
+        cursor.execute(
+            "insert into user(api_key) values(:api_key);",
+            {"api_key": api_key.api_key},
+        )
+        cursor.close()
 
     def find(self, api_key: ApiKey) -> Optional[User]:
         cursor = self.connection.cursor()
