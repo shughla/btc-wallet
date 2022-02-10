@@ -1,3 +1,4 @@
-from app.runner.setup import setup
+from app.runner.setup import DevelopmentAppFactory
 
-app = setup()
+appFactory = DevelopmentAppFactory()
+app = appFactory.create_app()

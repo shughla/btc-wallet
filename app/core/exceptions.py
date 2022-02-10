@@ -1,0 +1,2 @@
+class DuplicateUserApiKeyException(Exception):
+    pass
