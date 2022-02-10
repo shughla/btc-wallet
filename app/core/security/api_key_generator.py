@@ -8,19 +8,19 @@ class ApiKey:
     api_key: str
 
 
-class ApiKeyGenerator(Protocol):
+class IApiKeyGenerator(Protocol):
     def generate_api_key(self) -> ApiKey:
         pass
 
 
-class DefaultApiKeyGenerator(ApiKeyGenerator):
+class ApiKeyGenerator(IApiKeyGenerator):
     def generate_api_key(self) -> ApiKey:
         return ApiKey(secrets.token_urlsafe(16))
 
 
 def test_default_generator() -> None:
     keys = set()
-    generator = DefaultApiKeyGenerator()
+    generator = ApiKeyGenerator()
     for i in range(10000):
         key = generator.generate_api_key()
         assert key not in keys

@@ -1,7 +1,9 @@
 from dataclasses import dataclass
 
+from app.core.security.api_key_generator import ApiKey
+
 
 @dataclass
 class User:
-    user_id: int
-    api_key: str
+    id: int
+    api_key: ApiKey

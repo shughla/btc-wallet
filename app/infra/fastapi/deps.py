@@ -1,5 +1,7 @@
-from app.core.security.api_key_generator import ApiKeyGenerator, DefaultApiKeyGenerator
+from typing import Any
+
+from starlette.requests import Request
 
 
-def get_api_generator() -> ApiKeyGenerator:
-    return DefaultApiKeyGenerator()
+def get_facade(request: Request) -> Any:
+    return request.app.state.facade
