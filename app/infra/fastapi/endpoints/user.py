@@ -10,4 +10,5 @@ router = APIRouter()
 
 @router.post("/user", status_code=HTTPStatus.CREATED)  # type: ignore
 def create_user(generator: ApiKeyGenerator = Depends(get_api_generator)) -> ApiKey:
+    print(generator.generate_api_key())
     return generator.generate_api_key()

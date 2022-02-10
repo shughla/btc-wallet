@@ -1,11 +1,24 @@
+from typing import Protocol
+
 from fastapi import FastAPI
 
 from app.infra.fastapi.api import api_router
 
 
-def setup() -> FastAPI:
-    app = FastAPI(reload=True)
+class AppFactory(Protocol):
+    def create_app(self) -> FastAPI:
+        pass
 
-    app.include_router(api_router)
 
-    return app
+class DevelopmentAppFactory(AppFactory):
+    def create_app(self) -> FastAPI:
+        app = FastAPI()
+        app.include_router(api_router)
+        return app
+
+
+class TestAppFactory(AppFactory):
+    def create_app(self) -> FastAPI:
+        app = FastAPI()
+        app.include_router(api_router)
+        return app
