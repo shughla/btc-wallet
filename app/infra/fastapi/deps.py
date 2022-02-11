@@ -14,7 +14,7 @@ def get_facade(request: Request) -> Any:
 
 
 def get_authenticated_user(
-    facade: IFacade = Depends(get_facade), api_key: str = Header("api_key")
+    facade: IFacade = Depends(get_facade), api_key: str = Header(None)
 ) -> User:
     user = facade.authenticate(ApiKey(api_key))
     if user is None:

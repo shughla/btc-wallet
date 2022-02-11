@@ -13,7 +13,6 @@ router = APIRouter()
 @router.post("/user", status_code=HTTPStatus.CREATED)  # type: ignore
 def create_user(facade: IFacade = Depends(get_facade)) -> ApiKey:
     try:
-        facade.create_user()
+        return facade.create_user()
     except DuplicateUserApiKeyException:
         raise HTTPException(HTTPStatus.BAD_REQUEST)
-    return facade.create_user()
