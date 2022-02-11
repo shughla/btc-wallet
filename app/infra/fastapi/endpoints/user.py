@@ -1,11 +1,10 @@
 from http import HTTPStatus
-from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException
 
 from app.core.exceptions import DuplicateUserApiKeyException
-from app.core.facade import Facade, IFacade
-from app.core.security.api_key_generator import ApiKey, IApiKeyGenerator
+from app.core.facade import IFacade
+from app.core.security.api_key_generator import ApiKey
 from app.infra.fastapi.deps import get_facade
 
 router = APIRouter()
