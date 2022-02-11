@@ -89,11 +89,11 @@ def test_wallet_response_creator() -> None:
 
     wallet_response = (
         WalletResponseBuilder(wallet=wallet)
-            .with_currency(currencies[0])
-            .with_currency(currencies[1])
-            .with_currency(currencies[2])
-            .with_currency(currencies[3])
-            .create()
+        .with_currency(currencies[0])
+        .with_currency(currencies[1])
+        .with_currency(currencies[2])
+        .with_currency(currencies[3])
+        .create()
     )
 
     assert wallet_response.address == 1
@@ -105,3 +105,11 @@ def test_wallet_response_creator() -> None:
     assert wallet_response.amounts[2].balance == 15
     assert wallet_response.amounts[3].currency == "BTC"
     assert wallet_response.amounts[3].balance == 0.001
+
+
+# def test_get_wallet() -> None:
+#     response = client.post("/user")
+#     headers = {"Accept": "application/json", "Content-type": "application/json", "api-key": response.json()["api-key"]}
+#     print(type(headers))
+#     response = client.post("/wallet", headers=headers)
+#     print(response.json())

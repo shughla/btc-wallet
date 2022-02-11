@@ -19,3 +19,6 @@ class IWalletRepository(Protocol):
 
     def add_wallet(self, wallet: Wallet) -> Wallet:
         pass
+
+    def get_wallet(self, address: int) -> Wallet:
+        pass

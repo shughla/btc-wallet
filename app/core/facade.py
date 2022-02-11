@@ -22,6 +22,9 @@ class IFacade(Protocol):
     def get_satoshi_rate(self, currency: str) -> float:
         pass
 
+    def get_wallet(self, user: User, address: int) -> Wallet:
+        pass
+
 
 @dataclass
 class Facade(IFacade):
@@ -40,3 +43,6 @@ class Facade(IFacade):
 
     def get_satoshi_rate(self, currency: str) -> float:
         return self.rate_converter.get_rate(currency)
+
+    def get_wallet(self, user: User, address: int) -> Wallet:
+        return self.wallet_interceptor.get_wallet(user, address)

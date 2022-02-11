@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 
+from app.core.exceptions import WrongWalletRequestException
 from app.core.models.user import User
 from app.core.models.wallet import Wallet
 from app.core.repositories import IWalletRepository
@@ -21,3 +22,11 @@ class InMemoryWalletRepository(IWalletRepository):
             self.wallets[wallet.user_id].append(wallet)
         self.last_wallet += 1
         return wallet
+
+    def get_wallet(self, address: int) -> Wallet:
+        for wallets in self.wallets.values():
+            # user wallets
+            for wallet in wallets:
+                if wallet.address == address:
+                    return wallet
+        raise WrongWalletRequestException()
