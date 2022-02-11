@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass
@@ -8,3 +8,8 @@ class Transaction:
     to_wallet: int
     amount: int
     commission: int
+
+
+class DefaultTransaction(Transaction):
+    def __init__(self, from_wallet: int, to_wallet: int, amount: int, commission: int):
+        super().__init__(-1, from_wallet, to_wallet, amount, commission)

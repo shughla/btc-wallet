@@ -113,3 +113,69 @@ def test_wallet_response_creator() -> None:
 #     print(type(headers))
 #     response = client.post("/wallet", headers=headers)
 #     print(response.json())
+
+
+def test_get_wallet() -> None:
+    response = client.post("/user")
+    headers = response.json()
+    user_one_key = headers["api_key"]
+    response = client.post("/wallet", headers={"api-key": headers["api_key"]})
+    assert response.status_code == HTTPStatus.CREATED
+    address_one = response.json()["address"]
+    response = client.get(
+        f"/wallet/{address_one}", headers={"api-key": headers["api_key"]}
+    )
+    assert response.status_code == HTTPStatus.OK
+
+
+def test_get_wallet_wrong_user() -> None:
+    # todo
+    pass
+
+
+def test_transaction() -> None:
+    response = client.post("/user")
+    headers = response.json()
+    key_one = headers["api_key"]
+    response = client.post("/wallet", headers={"api-key": headers["api_key"]})
+    wallet_address_one = response.json()["address"]
+    response = client.post("/user")
+    headers = response.json()
+    response = client.post("/wallet", headers={"api-key": headers["api_key"]})
+    wallet_address_two = response.json()["address"]
+    headers = {
+        "Accept": "application/json",
+        "Content-type": "application/json",
+        "api-key": key_one,
+    }
+    transaction = {
+        "address_from": wallet_address_one,
+        "address_to": wallet_address_two,
+        "amount": 2000,
+    }
+    response = client.post("/transaction", headers=headers, json=transaction)
+    assert response.status_code == HTTPStatus.CREATED
+
+
+def test_transaction_limit() -> None:
+    response = client.post("/user")
+    headers = response.json()
+    key_one = headers["api_key"]
+    response = client.post("/wallet", headers={"api-key": headers["api_key"]})
+    wallet_address_one = response.json()["address"]
+    response = client.post("/user")
+    headers = response.json()
+    response = client.post("/wallet", headers={"api-key": headers["api_key"]})
+    wallet_address_two = response.json()["address"]
+    headers = {
+        "Accept": "application/json",
+        "Content-type": "application/json",
+        "api-key": key_one,
+    }
+    transaction = {
+        "address_from": wallet_address_one,
+        "address_to": wallet_address_two,
+        "amount": 2000000000,
+    }
+    response = client.post("/transaction", headers=headers, json=transaction)
+    assert response.status_code == HTTPStatus.BAD_REQUEST

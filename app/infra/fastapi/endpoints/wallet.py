@@ -23,7 +23,7 @@ def create_wallet(
     return get_wallet_response(facade, wallet)
 
 
-@router.get("/wallet/{address}", status_code=HTTPStatus.CREATED)  # type: ignore
+@router.get("/wallet/{address}", status_code=HTTPStatus.OK)  # type: ignore
 def get_wallet(
     address: int,
     facade: IFacade = Depends(get_facade),

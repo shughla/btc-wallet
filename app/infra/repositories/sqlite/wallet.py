@@ -56,3 +56,11 @@ class SQLiteWalletRepository(IWalletRepository):
             )
             wallet.address = cursor.lastrowid
             return wallet
+
+    def update_wallet(self, wallet: Wallet) -> None:
+        with get_cursor(self.connection) as cursor:
+            cursor.execute(
+                "update wallet set (balance_satoshi = :balance) "
+                "where wallet_id = :address",
+                {"balance": wallet.balance, "address": wallet.address},
+            )

@@ -1,5 +1,6 @@
 from typing import Optional, Protocol
 
+from app.core.models.transaction import Transaction
 from app.core.models.user import User
 from app.core.models.wallet import Wallet
 from app.core.security.api_key_generator import ApiKey
@@ -21,4 +22,12 @@ class IWalletRepository(Protocol):
         pass
 
     def get_wallet(self, address: int) -> Wallet:
+        pass
+
+    def update_wallet(self, wallet: Wallet) -> None:
+        pass
+
+
+class ITransactionRepository(Protocol):
+    def add_transaction(self, request: Transaction) -> None:
         pass

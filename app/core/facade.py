@@ -2,10 +2,12 @@ from dataclasses import dataclass, field
 from typing import Optional, Protocol
 
 from app.core.interceptors.rate_converter import IRateConverter, SatoshiRateConverter
+from app.core.interceptors.transaction import ITransactionInterceptor
 from app.core.interceptors.user import IUserInterceptor
 from app.core.interceptors.wallet import IWalletInterceptor
 from app.core.models.user import User
 from app.core.models.wallet import Wallet
+from app.core.schemas.transaction import TransactionRequest
 from app.core.security.api_key_generator import ApiKey
 
 
@@ -25,11 +27,15 @@ class IFacade(Protocol):
     def get_wallet(self, user: User, address: int) -> Wallet:
         pass
 
+    def create_transaction(self, user: User, request: TransactionRequest) -> int:
+        pass
+
 
 @dataclass
 class Facade(IFacade):
     user_interceptor: IUserInterceptor
     wallet_interceptor: IWalletInterceptor
+    transaction_interceptor: ITransactionInterceptor
     rate_converter: IRateConverter = field(default_factory=SatoshiRateConverter)
 
     def create_user(self) -> ApiKey:
@@ -46,3 +52,6 @@ class Facade(IFacade):
 
     def get_wallet(self, user: User, address: int) -> Wallet:
         return self.wallet_interceptor.get_wallet(user, address)
+
+    def create_transaction(self, user: User, request: TransactionRequest) -> int:
+        return self.transaction_interceptor.create_transaction(user, request)

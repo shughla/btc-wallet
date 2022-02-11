@@ -4,3 +4,7 @@ class DuplicateUserApiKeyException(Exception):
 
 class WrongWalletRequestException(Exception):
     pass
+
+
+class NotEnoughMoneyException(Exception):
+    pass
