@@ -1,7 +1,6 @@
 from dataclasses import dataclass, field
 from typing import Optional
 
-from app.core.exceptions import DuplicateUserApiKeyException
 from app.core.models.user import User
 from app.core.repositories import IUserRepository
 from app.core.security.api_key_generator import ApiKey

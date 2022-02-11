@@ -1,0 +1,13 @@
+
+POST  localhost:8000/user
+accept: application/json
+
+###
+
+POST localhost:8000/wallet
+accept: application/json
+api-key: Ixg0MKbsFkUDGHqP3M7OhQ
+
+###
+
+
