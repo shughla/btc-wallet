@@ -12,8 +12,6 @@ class InMemoryUserRepository(IUserRepository):
     users: list[User] = field(default_factory=list)
 
     def add_user(self, api_key: ApiKey) -> None:
-        if self.find(api_key):
-            raise DuplicateUserApiKeyException()
         index = len(self.users)
         self.users.append(User(id=index, api_key=api_key))
 
