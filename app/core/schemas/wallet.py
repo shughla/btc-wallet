@@ -6,14 +6,14 @@ from app.core.interceptors.rate_converter import CurrencyRate
 from app.core.models.wallet import Wallet
 
 
-class Balance(BaseModel):  # type: ignore
+class Balance(BaseModel):
     currency: str
     balance: float
 
 
-class WalletResponse(BaseModel):  # type: ignore
+class WalletResponse(BaseModel):
     address: int
-    amounts: list[Balance]
+    balance_currencies: list[Balance]
 
 
 @dataclass
@@ -36,4 +36,6 @@ class WalletResponseBuilder:
                 )
             )
 
-        return WalletResponse(address=self.wallet.address, amounts=balance_list)
+        return WalletResponse(
+            address=self.wallet.address, balance_currencies=balance_list
+        )

@@ -30,3 +30,9 @@ class InMemoryWalletRepository(IWalletRepository):
                 if wallet.address == address:
                     return wallet
         raise WrongWalletRequestException()
+
+    def update_wallet(self, wallet: Wallet) -> None:
+        for wallet in self.wallets[wallet.user_id]:
+            if wallet.address == wallet.address:
+                wallet.balance = wallet.balance
+                return

@@ -12,3 +12,14 @@ class InMemoryTransactionRepository(ITransactionRepository):
         index = len(self.transactions) + 1
         request.transaction_id = index
         self.transactions.append(request)
+
+    def find_all_transaction(self) -> list[Transaction]:
+        return list(self.transactions)
+
+    def find_transaction_by_wallet(self, address: int) -> list[Transaction]:
+        return list(
+            filter(
+                lambda x: x.from_wallet == address or x.to_wallet == address,
+                self.transactions,
+            )
+        )
