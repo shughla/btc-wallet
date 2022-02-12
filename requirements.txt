@@ -4,9 +4,9 @@ mypy
 black
 pytest
 codetiming
-fastapi==0.73.0
-pydantic==1.9.0
-uvicorn==0.17.4
-starlette==0.17.1
-requests==2.26.0
+fastapi
+pydantic
+uvicorn
+starlette
+requests
 types-requests
