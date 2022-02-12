@@ -31,3 +31,6 @@ class IWalletRepository(Protocol):
 class ITransactionRepository(Protocol):
     def add_transaction(self, request: Transaction) -> None:
         pass
+
+    def find_all_transaction(self) -> list[Transaction]:
+        pass

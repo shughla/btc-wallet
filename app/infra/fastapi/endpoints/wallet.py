@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from app.core.exceptions import WrongWalletRequestException
 from app.core.facade import IFacade
-from app.core.interceptors.rate_converter import Currency, CurrencyRate
+from app.core.interceptors.rate_converter import Currency
 from app.core.models.user import User
 from app.core.models.wallet import Wallet
 from app.core.schemas.wallet import WalletResponse, WalletResponseBuilder
@@ -41,7 +41,7 @@ def get_wallet_response(facade: IFacade, wallet: Wallet) -> WalletResponse:
     satoshis_to_usd = facade.get_satoshi_rate(Currency.USD)
     return (
         WalletResponseBuilder(wallet)
-        .with_currency(CurrencyRate(Currency.USD, satoshis_to_usd))
-        .with_currency(CurrencyRate(Currency.BTC, satoshis_to_btc))
+        .with_currency(satoshis_to_usd)
+        .with_currency(satoshis_to_btc)
         .create()
     )

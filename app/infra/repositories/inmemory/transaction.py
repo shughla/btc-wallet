@@ -12,3 +12,6 @@ class InMemoryTransactionRepository(ITransactionRepository):
         index = len(self.transactions) + 1
         request.transaction_id = index
         self.transactions.append(request)
+
+    def find_all_transaction(self) -> list[Transaction]:
+        return list(self.transactions)

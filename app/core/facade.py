@@ -1,10 +1,15 @@
 from dataclasses import dataclass, field
 from typing import Optional, Protocol
 
-from app.core.interceptors.rate_converter import IRateConverter, SatoshiRateConverter
+from app.core.interceptors.rate_converter import (
+    CachedRateConverter,
+    CurrencyRate,
+    IRateConverter,
+)
 from app.core.interceptors.transaction import ITransactionInterceptor
 from app.core.interceptors.user import IUserInterceptor
 from app.core.interceptors.wallet import IWalletInterceptor
+from app.core.models.transaction import Transaction
 from app.core.models.user import User
 from app.core.models.wallet import Wallet
 from app.core.schemas.transaction import TransactionRequest
@@ -21,7 +26,7 @@ class IFacade(Protocol):
     def authenticate(self, api_key: ApiKey) -> Optional[User]:
         pass
 
-    def get_satoshi_rate(self, currency: str) -> float:
+    def get_satoshi_rate(self, currency: str) -> CurrencyRate:
         pass
 
     def get_wallet(self, user: User, address: int) -> Wallet:
@@ -30,13 +35,16 @@ class IFacade(Protocol):
     def create_transaction(self, user: User, request: TransactionRequest) -> int:
         pass
 
+    def get_all_transaction(self, user: User) -> list[Transaction]:
+        pass
+
 
 @dataclass
 class Facade(IFacade):
     user_interceptor: IUserInterceptor
     wallet_interceptor: IWalletInterceptor
     transaction_interceptor: ITransactionInterceptor
-    rate_converter: IRateConverter = field(default_factory=SatoshiRateConverter)
+    rate_converter: IRateConverter = field(default_factory=CachedRateConverter)
 
     def create_user(self) -> ApiKey:
         return self.user_interceptor.create_user()
@@ -47,7 +55,7 @@ class Facade(IFacade):
     def authenticate(self, api_key: ApiKey) -> Optional[User]:
         return self.user_interceptor.get_user(api_key)
 
-    def get_satoshi_rate(self, currency: str) -> float:
+    def get_satoshi_rate(self, currency: str) -> CurrencyRate:
         return self.rate_converter.get_rate(currency)
 
     def get_wallet(self, user: User, address: int) -> Wallet:
@@ -55,3 +63,6 @@ class Facade(IFacade):
 
     def create_transaction(self, user: User, request: TransactionRequest) -> int:
         return self.transaction_interceptor.create_transaction(user, request)
+
+    def get_all_transaction(self, user: User) -> list[Transaction]:
+        return self.transaction_interceptor.get_all_transaction(user)

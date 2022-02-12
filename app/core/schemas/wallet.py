@@ -13,7 +13,7 @@ class Balance(BaseModel):  # type: ignore
 
 class WalletResponse(BaseModel):  # type: ignore
     address: int
-    amounts: list[Balance]
+    balance_currencies: list[Balance]
 
 
 @dataclass
@@ -36,4 +36,6 @@ class WalletResponseBuilder:
                 )
             )
 
-        return WalletResponse(address=self.wallet.address, amounts=balance_list)
+        return WalletResponse(
+            address=self.wallet.address, balance_currencies=balance_list
+        )

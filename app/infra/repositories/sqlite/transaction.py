@@ -32,3 +32,18 @@ class SQLiteTransactionRepository(ITransactionRepository):
                     "commission": request.commission,
                 },
             )
+
+    def find_all_transaction(self) -> list[Transaction]:
+        with get_cursor(self.connection) as cursor:
+            cursor.execute("select * from transactions;")
+            transactions = cursor.fetchall()
+            return [
+                Transaction(
+                    transaction_id=transaction[0],
+                    from_wallet=transaction[1],
+                    to_wallet=transaction[2],
+                    amount=transaction[3],
+                    commission=transaction[4],
+                )
+                for transaction in transactions
+            ]
