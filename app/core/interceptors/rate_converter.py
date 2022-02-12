@@ -20,20 +20,33 @@ class IRateConverter:
         pass
 
 
+BTC_FRACTION = float(10**-8)
+
+
 class SatoshiRateConverter(IRateConverter):
     CRYPTOCOMPARE_ENDPOINT = (
         "https://min-api.cryptocompare.com/data/price?fsym=%s&tsyms=%s"
     )
-    BTC_FRACTION = float(10**-8)
 
     def get_rate(self, currency: str) -> CurrencyRate:
         quote_url = self.CRYPTOCOMPARE_ENDPOINT % (Currency.BTC, currency.upper())
         response = requests.get(quote_url)
         btc_value = response.json().get(currency.upper())
         amount = 1
-        fiat_value = float(amount * self.BTC_FRACTION) * float(btc_value)
+        fiat_value = float(amount * BTC_FRACTION) * float(btc_value)
         currency_rate = CurrencyRate(currency=currency, rate=fiat_value)
         return currency_rate
+
+
+@dataclass
+class DummySatoshiRateConverter(IRateConverter):
+    custom_rate: float = 1.5
+
+    def get_rate(self, currency: str) -> CurrencyRate:
+        if currency == "BTC":
+            return CurrencyRate("BTC", BTC_FRACTION)
+        else:
+            return CurrencyRate(currency, self.custom_rate)
 
 
 cache: dict[str, tuple[CurrencyRate, datetime]] = dict()

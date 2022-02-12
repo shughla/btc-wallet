@@ -1,7 +1,11 @@
+import pytest
+
+from app.core.exceptions import NotEnoughMoneyException
 from app.core.interceptors.rate_converter import CurrencyRate
+from app.core.interceptors.transaction import TransactionCalculator
 from app.core.interceptors.wallet import WalletInterceptor
 from app.core.models.user import User
-from app.core.models.wallet import Wallet
+from app.core.models.wallet import DefaultWallet, Wallet
 from app.core.schemas.wallet import WalletResponseBuilder
 from app.core.security.api_key_generator import ApiKey
 from app.infra.repositories.inmemory.wallet import InMemoryWalletRepository
@@ -45,3 +49,16 @@ def test_wallet_response_creator() -> None:
     assert wallet_response.balance_currencies[2].balance == 15
     assert wallet_response.balance_currencies[3].currency == "BTC"
     assert wallet_response.balance_currencies[3].balance == 0.001
+
+
+def test_transaction_commission() -> None:
+    wallet1 = DefaultWallet(0)
+    wallet2 = DefaultWallet(1)
+    wallet3 = DefaultWallet(0)
+    calculator = TransactionCalculator(0.5)
+    assert 500 == calculator.get_balances(1000, wallet1, wallet2)
+    assert 0 == calculator.get_balances(500, wallet1, wallet3)
+    with pytest.raises(NotEnoughMoneyException):
+        assert calculator.get_balances(10**15, wallet1, wallet1)
+        assert calculator.get_balances(10**15, wallet1, wallet2)
+        assert calculator.get_balances(10**15, wallet1, wallet3)

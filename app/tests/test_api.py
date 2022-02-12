@@ -3,7 +3,8 @@ from typing import Any
 
 from starlette.testclient import TestClient
 
-from app.runner.setup import TestAppFactory
+from app.infra.fastapi.deps import ADMIN_KEY
+from app.runner.setup import TEST_COMMISSION_PERCENT, TestAppFactory
 
 appFactory = TestAppFactory()
 app = appFactory.create_app()
@@ -51,41 +52,25 @@ def test_get_wallet_wrong_user() -> None:
 def test_transaction() -> None:
     key_one = create_user()
     response = client.post("/wallet", headers={"api-key": key_one})
-    wallet_address_one = response.json()["address"]
+    wallet1 = response.json()["address"]
 
     key_two = create_user()
     response = client.post("/wallet", headers={"api-key": key_two})
-    wallet_address_two = response.json()["address"]
-    headers = {
-        "Accept": "application/json",
-        "Content-type": "application/json",
-        "api-key": key_one,
-    }
-    transaction = {
-        "from_wallet": wallet_address_one,
-        "to_wallet": wallet_address_two,
-        "amount": 2000,
-    }
+    wallet2 = response.json()["address"]
+    headers = {"api-key": key_one}
+    transaction = {"from_wallet": wallet1, "to_wallet": wallet2, "amount": 2000}
     response = client.post("/transaction", headers=headers, json=transaction)
     assert response.status_code == HTTPStatus.CREATED
 
 
 def test_transaction_limit() -> None:
     key_one = create_user()
-    wallet_address_one = create_wallet(key_one)
+    wallet1 = create_wallet(key_one)
 
     key_two = create_user()
-    wallet_address_two = create_wallet(key_two)
-    headers = {
-        "Accept": "application/json",
-        "Content-type": "application/json",
-        "api-key": key_one,
-    }
-    transaction = {
-        "from_wallet": wallet_address_one,
-        "to_wallet": wallet_address_two,
-        "amount": 2000000000,
-    }
+    wallet2 = create_wallet(key_two)
+    headers = {"api-key": key_one}
+    transaction = {"from_wallet": wallet1, "to_wallet": wallet2, "amount": 2000000000}
     response = client.post("/transaction", headers=headers, json=transaction)
     assert response.status_code == HTTPStatus.BAD_REQUEST
 
@@ -102,67 +87,65 @@ def assert_equal_balances(
 
 def test_transactions() -> None:
     key_one = create_user()
-    wallet_address_one = create_wallet(key_one)
+    wallet1 = create_wallet(key_one)
 
     key_two = create_user()
-    wallet_address_two = create_wallet(key_two)
+    wallet2 = create_wallet(key_two)
 
-    assert_equal_balances(key_one, key_two, wallet_address_one, wallet_address_two)
+    assert_equal_balances(key_one, key_two, wallet1, wallet2)
     response = client.get("/transaction", headers={"api-key": key_one})
     initial_transaction_len = len(response.json())
 
-    headers_one = {
-        "Accept": "application/json",
-        "Content-type": "application/json",
-        "api-key": key_one,
-    }
-    transaction = {
-        "from_wallet": wallet_address_one,
-        "to_wallet": wallet_address_two,
-        "amount": 2000,
-    }
+    headers_one = {"api-key": key_one}
+    transaction = {"from_wallet": wallet1, "to_wallet": wallet2, "amount": 2000}
     response = client.post("/transaction", headers=headers_one, json=transaction)
     assert response.status_code == HTTPStatus.CREATED
     headers = {"Accept": "application/json", "api-key": key_one}
     response = client.get("/transaction", headers=headers)
     transactions = response.json()
     assert len(transactions) == initial_transaction_len + 1
-    assert transactions[initial_transaction_len]["from_wallet"] == wallet_address_one
-    assert transactions[initial_transaction_len]["to_wallet"] == wallet_address_two
+    assert transactions[initial_transaction_len]["from_wallet"] == wallet1
+    assert transactions[initial_transaction_len]["to_wallet"] == wallet2
     assert transactions[initial_transaction_len]["amount"] == 2000
 
-    transaction = {
-        "from_wallet": wallet_address_two,
-        "to_wallet": wallet_address_one,
-        "amount": 2000,
-    }
-    headers_two = {
-        "Accept": "application/json",
-        "Content-type": "application/json",
-        "api-key": key_two,
-    }
+    transaction = {"from_wallet": wallet2, "to_wallet": wallet1, "amount": 2000}
+    headers_two = {"api-key": key_two}
     response = client.post("/transaction", headers=headers_two, json=transaction)
     assert response.status_code == HTTPStatus.CREATED
     response = client.get("/transaction", headers=headers_two)
     transactions = response.json()
     assert len(transactions) == initial_transaction_len + 2
-    assert transactions[initial_transaction_len]["from_wallet"] == wallet_address_one
-    assert transactions[initial_transaction_len]["to_wallet"] == wallet_address_two
+    assert transactions[initial_transaction_len]["from_wallet"] == wallet1
+    assert transactions[initial_transaction_len]["to_wallet"] == wallet2
     assert transactions[initial_transaction_len]["amount"] == 2000
-    assert (
-        transactions[initial_transaction_len + 1]["from_wallet"] == wallet_address_two
-    )
-    assert transactions[initial_transaction_len + 1]["to_wallet"] == wallet_address_one
+    assert transactions[initial_transaction_len + 1]["from_wallet"] == wallet2
+    assert transactions[initial_transaction_len + 1]["to_wallet"] == wallet1
     assert transactions[initial_transaction_len + 1]["amount"] == 2000
 
-    assert_equal_balances(key_one, key_two, wallet_address_one, wallet_address_two)
-    response = client.get(
-        f"/wallet/{wallet_address_two}/transaction", headers=headers_two
-    )
+    assert_equal_balances(key_one, key_two, wallet1, wallet2)
+    response = client.get(f"/wallet/{wallet2}/transaction", headers=headers_two)
     transactions_two = response.json()
 
-    response = client.get(
-        f"/wallet/{wallet_address_one}/transaction", headers=headers_one
-    )
+    response = client.get(f"/wallet/{wallet1}/transaction", headers=headers_one)
     transactions_one = response.json()
     assert len(transactions_one) == len(transactions_two)
+
+
+def test_statistics_logging() -> None:
+    key1 = create_user()
+    key2 = create_user()
+    wallet1 = create_wallet(key1)
+    wallet2 = create_wallet(key2)
+    money = 2000
+    request = {"from_wallet": wallet1, "to_wallet": wallet2, "amount": money}
+    response = client.post("/statistics", headers={"api-key": ADMIN_KEY})
+    total_transactions = response.json()["total_transactions"]
+    profit = response.json()["profit"]
+    new_requests = 10
+    for i in range(new_requests):
+        response = client.post("/transaction", json=request, headers={"api-key": key1})
+        assert HTTPStatus.CREATED == response.status_code
+    total_commission = int(money * TEST_COMMISSION_PERCENT) * new_requests
+    response = client.post("/statistics", headers={"api-key": ADMIN_KEY})
+    assert response.json()["profit"] == profit + total_commission
+    assert response.json()["total_transactions"] == total_transactions + new_requests

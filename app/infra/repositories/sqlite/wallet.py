@@ -4,7 +4,7 @@ from app.core.exceptions import WrongWalletRequestException
 from app.core.models.user import User
 from app.core.models.wallet import Wallet
 from app.core.repositories import IWalletRepository
-from app.infra.repositories.sqlite import get_cursor
+from app.infra.repositories.sqlite.utils import get_cursor
 
 
 class SQLiteWalletRepository(IWalletRepository):
@@ -44,7 +44,7 @@ class SQLiteWalletRepository(IWalletRepository):
                 {"address": address},
             )
             wallet = cursor.fetchone()
-            if len(wallet) == 0:
+            if wallet is None or len(wallet) == 0:
                 raise WrongWalletRequestException()
             return Wallet(address=wallet[0], user_id=wallet[1], balance=wallet[2])
 
@@ -60,7 +60,7 @@ class SQLiteWalletRepository(IWalletRepository):
     def update_wallet(self, wallet: Wallet) -> None:
         with get_cursor(self.connection) as cursor:
             cursor.execute(
-                "update wallet set (balance_satoshi = :balance) "
+                "update wallet set balance_satoshi = :balance "
                 "where wallet_id = :address",
                 {"balance": wallet.balance, "address": wallet.address},
             )

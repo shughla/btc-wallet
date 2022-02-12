@@ -2,7 +2,7 @@ from sqlite3 import Connection
 
 from app.core.models.transaction import Transaction
 from app.core.repositories import ITransactionRepository
-from app.infra.repositories.sqlite import get_cursor
+from app.infra.repositories.sqlite.utils import get_cursor
 
 
 def convert_to_transactions(

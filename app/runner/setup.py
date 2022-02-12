@@ -4,8 +4,14 @@ from typing import Protocol
 
 from fastapi import FastAPI
 
-from app.core.facade import Facade
-from app.core.interceptors.transaction import TransactionInterceptor
+from app.core.facade import Facade, StatisticsInterceptor
+from app.core.interceptors.rate_converter import DummySatoshiRateConverter
+from app.core.interceptors.transaction import (
+    InMemoryStatisticsRepository,
+    SQLiteStatisticsRepository,
+    TransactionCalculator,
+    TransactionInterceptor,
+)
 from app.core.interceptors.user import UserInterceptor
 from app.core.interceptors.wallet import WalletInterceptor
 from app.core.security.api_key_generator import ApiKeyGenerator
@@ -37,11 +43,15 @@ class DevelopmentAppFactory(AppFactory):
             WalletInterceptor(wallet_repository),
             TransactionInterceptor(
                 SQLiteTransactionRepository(connection),
-                wallet_repository=wallet_repository,
+                wallet_repository,
             ),
+            StatisticsInterceptor(SQLiteStatisticsRepository(connection)),
         )
         app.include_router(api_router)
         return app
+
+
+TEST_COMMISSION_PERCENT = 0.5
 
 
 class TestAppFactory(AppFactory):
@@ -52,8 +62,12 @@ class TestAppFactory(AppFactory):
             UserInterceptor(InMemoryUserRepository(), ApiKeyGenerator()),
             WalletInterceptor(wallet_repository),
             TransactionInterceptor(
-                InMemoryTransactionRepository(), wallet_repository=wallet_repository
+                InMemoryTransactionRepository(),
+                wallet_repository,
+                TransactionCalculator(TEST_COMMISSION_PERCENT),
             ),
+            StatisticsInterceptor(InMemoryStatisticsRepository()),
+            DummySatoshiRateConverter(),
         )
         app.include_router(api_router)
         return app

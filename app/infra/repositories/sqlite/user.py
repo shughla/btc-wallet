@@ -4,7 +4,7 @@ from typing import Optional
 from app.core.models.user import User
 from app.core.repositories import IUserRepository
 from app.core.security.api_key_generator import ApiKey
-from app.infra.repositories.sqlite import get_cursor
+from app.infra.repositories.sqlite.utils import get_cursor
 
 
 class SQLiteUserRepository(IUserRepository):
