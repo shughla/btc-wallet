@@ -38,6 +38,9 @@ class IFacade(Protocol):
     def get_all_transaction(self, user: User) -> list[Transaction]:
         pass
 
+    def get_wallet_transactions(self, user: User, address: int) -> list[Transaction]:
+        pass
+
 
 @dataclass
 class Facade(IFacade):
@@ -66,3 +69,6 @@ class Facade(IFacade):
 
     def get_all_transaction(self, user: User) -> list[Transaction]:
         return self.transaction_interceptor.get_all_transaction(user)
+
+    def get_wallet_transactions(self, user: User, address: int) -> list[Transaction]:
+        return self.transaction_interceptor.get_wallet_transactions(user, address)

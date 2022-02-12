@@ -5,8 +5,10 @@ from fastapi import APIRouter, Depends, HTTPException
 from app.core.exceptions import WrongWalletRequestException
 from app.core.facade import IFacade
 from app.core.interceptors.rate_converter import Currency
+from app.core.models.transaction import Transaction
 from app.core.models.user import User
 from app.core.models.wallet import Wallet
+from app.core.schemas.transaction import TransactionResponse
 from app.core.schemas.wallet import WalletResponse, WalletResponseBuilder
 from app.infra.fastapi.deps import get_authenticated_user, get_facade
 
@@ -32,6 +34,22 @@ def get_wallet(
     try:
         wallet = facade.get_wallet(user, address)
         return get_wallet_response(facade, wallet)
+    except WrongWalletRequestException:
+        raise HTTPException(HTTPStatus.BAD_REQUEST)
+
+
+@router.get(
+    "/wallet/{address}/transaction",
+    status_code=HTTPStatus.OK,
+    response_model=list[TransactionResponse],
+)
+def get_wallet_transactions(
+    address: int,
+    facade: IFacade = Depends(get_facade),
+    user: User = Depends(get_authenticated_user),
+) -> list[Transaction]:
+    try:
+        return facade.get_wallet_transactions(user, address)
     except WrongWalletRequestException:
         raise HTTPException(HTTPStatus.BAD_REQUEST)
 

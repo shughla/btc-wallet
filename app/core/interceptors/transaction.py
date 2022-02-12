@@ -16,6 +16,9 @@ class ITransactionInterceptor:
     def get_all_transaction(self, user: User) -> list[Transaction]:
         pass
 
+    def get_wallet_transactions(self, user: User, address: int) -> list[Transaction]:
+        pass
+
 
 class ICommissionCalculator(Protocol):
     def get_balances(
@@ -73,3 +76,9 @@ class TransactionInterceptor(ITransactionInterceptor):
 
     def get_all_transaction(self, user: User) -> list[Transaction]:
         return self.transaction_repository.find_all_transaction()
+
+    def get_wallet_transactions(self, user: User, address: int) -> list[Transaction]:
+        wallet = self.wallet_repository.get_wallet(address)
+        if wallet.user_id != user.id:
+            raise WrongWalletRequestException()
+        return self.transaction_repository.find_transaction_by_wallet(address)

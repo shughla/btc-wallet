@@ -37,7 +37,7 @@ class SatoshiRateConverter(IRateConverter):
 
 
 cache: dict[str, tuple[CurrencyRate, datetime]] = dict()
-CACHE_TIME = timedelta(0, 10)
+CACHE_TIMEDELTA = timedelta(seconds=10)
 
 
 @dataclass
@@ -48,8 +48,10 @@ class CachedRateConverter(IRateConverter):
         rate_datetime = cache.get(currency)
         if rate_datetime is not None:
             rate, time = rate_datetime
-            if time > datetime.now() - CACHE_TIME:
+            if time > datetime.now() - CACHE_TIMEDELTA:
                 return rate
+            else:
+                cache.pop(currency)
 
         currency_rate = self.rateConverter.get_rate(currency)
 

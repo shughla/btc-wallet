@@ -111,7 +111,7 @@ def test_transactions() -> None:
     response = client.get("/transaction", headers={"api-key": key_one})
     initial_transaction_len = len(response.json())
 
-    headers = {
+    headers_one = {
         "Accept": "application/json",
         "Content-type": "application/json",
         "api-key": key_one,
@@ -121,7 +121,7 @@ def test_transactions() -> None:
         "to_wallet": wallet_address_two,
         "amount": 2000,
     }
-    response = client.post("/transaction", headers=headers, json=transaction)
+    response = client.post("/transaction", headers=headers_one, json=transaction)
     assert response.status_code == HTTPStatus.CREATED
     headers = {
         "Accept": "application/json",
@@ -139,14 +139,14 @@ def test_transactions() -> None:
         "to_wallet": wallet_address_one,
         "amount": 2000,
     }
-    headers = {
+    headers_two = {
         "Accept": "application/json",
         "Content-type": "application/json",
         "api-key": key_two,
     }
-    response = client.post("/transaction", headers=headers, json=transaction)
+    response = client.post("/transaction", headers=headers_two, json=transaction)
     assert response.status_code == HTTPStatus.CREATED
-    response = client.get("/transaction", headers=headers)
+    response = client.get("/transaction", headers=headers_two)
     transactions = response.json()
     assert len(transactions) == initial_transaction_len + 2
     assert transactions[initial_transaction_len]["from_wallet"] == wallet_address_one
@@ -159,3 +159,13 @@ def test_transactions() -> None:
     assert transactions[initial_transaction_len + 1]["amount"] == 2000
 
     assert_equal_balances(key_one, key_two, wallet_address_one, wallet_address_two)
+    response = client.get(
+        f"/wallet/{wallet_address_two}/transaction", headers=headers_two
+    )
+    transactions_two = response.json()
+
+    response = client.get(
+        f"/wallet/{wallet_address_one}/transaction", headers=headers_one
+    )
+    transactions_one = response.json()
+    assert len(transactions_one) == len(transactions_two)
