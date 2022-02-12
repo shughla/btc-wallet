@@ -24,7 +24,7 @@ class SatoshiRateConverter(IRateConverter):
     CRYPTOCOMPARE_ENDPOINT = (
         "https://min-api.cryptocompare.com/data/price?fsym=%s&tsyms=%s"
     )
-    BTC_FRACTION = float(10 ** -8)
+    BTC_FRACTION = float(10**-8)
 
     def get_rate(self, currency: str) -> CurrencyRate:
         quote_url = self.CRYPTOCOMPARE_ENDPOINT % (Currency.BTC, currency.upper())

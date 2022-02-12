@@ -5,7 +5,9 @@ from app.core.repositories import ITransactionRepository
 from app.infra.repositories.sqlite import get_cursor
 
 
-def convert_to_transactions(transactions: list[tuple[int, int, int, int, int]]) -> list[Transaction]:
+def convert_to_transactions(
+    transactions: list[tuple[int, int, int, int, int]]
+) -> list[Transaction]:
     return [
         Transaction(
             transaction_id=transaction[0],

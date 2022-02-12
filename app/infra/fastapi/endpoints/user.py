@@ -10,7 +10,7 @@ from app.infra.fastapi.deps import get_facade
 router = APIRouter()
 
 
-@router.post("/user", status_code=HTTPStatus.CREATED)  # type: ignore
+@router.post("/user", status_code=HTTPStatus.CREATED)
 def create_user(facade: IFacade = Depends(get_facade)) -> ApiKey:
     try:
         return facade.create_user()

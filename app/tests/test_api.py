@@ -123,10 +123,7 @@ def test_transactions() -> None:
     }
     response = client.post("/transaction", headers=headers_one, json=transaction)
     assert response.status_code == HTTPStatus.CREATED
-    headers = {
-        "Accept": "application/json",
-        "api-key": key_one,
-    }
+    headers = {"Accept": "application/json", "api-key": key_one}
     response = client.get("/transaction", headers=headers)
     transactions = response.json()
     assert len(transactions) == initial_transaction_len + 1

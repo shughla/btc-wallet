@@ -12,7 +12,7 @@ from app.infra.fastapi.deps import get_authenticated_user, get_facade
 router = APIRouter()
 
 
-@router.post("/transaction", status_code=HTTPStatus.CREATED)  # type: ignore
+@router.post("/transaction", status_code=HTTPStatus.CREATED)
 def create_transaction(
     request: TransactionRequest,
     facade: IFacade = Depends(get_facade),
@@ -33,8 +33,7 @@ def create_transaction(
     response_model_exclude_unset=True,
 )
 def get_transactions(
-    facade: IFacade = Depends(get_facade),
-    user: User = Depends(get_authenticated_user),
+    facade: IFacade = Depends(get_facade), user: User = Depends(get_authenticated_user)
 ) -> list[Transaction]:
     transaction = facade.get_all_transaction(user)
     return transaction

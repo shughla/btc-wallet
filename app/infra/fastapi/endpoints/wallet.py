@@ -15,7 +15,7 @@ from app.infra.fastapi.deps import get_authenticated_user, get_facade
 router = APIRouter()
 
 
-@router.post("/wallet", status_code=HTTPStatus.CREATED)  # type: ignore
+@router.post("/wallet", status_code=HTTPStatus.CREATED)
 def create_wallet(
     facade: IFacade = Depends(get_facade), user: User = Depends(get_authenticated_user)
 ) -> WalletResponse:
@@ -25,7 +25,7 @@ def create_wallet(
     return get_wallet_response(facade, wallet)
 
 
-@router.get("/wallet/{address}", status_code=HTTPStatus.OK)  # type: ignore
+@router.get("/wallet/{address}", status_code=HTTPStatus.OK)
 def get_wallet(
     address: int,
     facade: IFacade = Depends(get_facade),
