@@ -12,14 +12,11 @@ from app.core.models.transaction import Transaction
 from app.core.models.user import User
 from app.core.models.wallet import Wallet
 from app.core.rate_converter import IRateConverter, SatoshiRateConverter
-from app.core.repositories import IStatisticsRepository
 from app.core.schemas.transaction import TransactionRequest
 from app.core.security.api_key_generator import ApiKey
 
 
 def log_transaction(func: Any) -> Any:
-    statistics_repository: IStatisticsRepository
-
     @wraps(func)
     def transaction_decorator(
         self: "Facade", user: User, request: TransactionRequest

@@ -14,7 +14,7 @@ class ICommissionCalculator(Protocol):
 
 
 @dataclass
-class TransactionCalculator:
+class TransactionCalculator(ICommissionCalculator):
     commission_rate: float = Config.DEFAULT_COMMISSION_RATE
 
     def _get_commission(
@@ -31,9 +31,9 @@ class TransactionCalculator:
         self, request_amount: int, wallet_from: Wallet, wallet_to: Wallet
     ) -> int:
         commission = self._get_commission(request_amount, wallet_from, wallet_to)
-        total_amount = request_amount + commission
+        total_amount = request_amount
         if wallet_from.balance < total_amount:
             raise NotEnoughMoneyException(wallet_from.address)
         wallet_from.balance -= total_amount
-        wallet_to.balance += request_amount
+        wallet_to.balance += request_amount - commission
         return commission

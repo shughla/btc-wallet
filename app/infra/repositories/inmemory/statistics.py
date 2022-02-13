@@ -1,12 +1,14 @@
 import json
+from dataclasses import dataclass, field
 from typing import Any
 
 from app.core.models.statistics import Statistics
 from app.core.repositories import IStatisticsRepository
 
 
+@dataclass
 class InMemoryStatisticsRepository(IStatisticsRepository):
-    statistics: Statistics = Statistics(0, 0)
+    statistics: Statistics = field(default_factory=lambda: Statistics(0, 0))
 
     def record_transaction(self, commission: int) -> None:
         self.statistics.profit += commission

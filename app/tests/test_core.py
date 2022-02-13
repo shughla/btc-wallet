@@ -4,14 +4,24 @@ from app.core.calculator import TransactionCalculator
 from app.core.exceptions import (
     MaximumWalletAmountReachedException,
     NotEnoughMoneyException,
+    WrongWalletRequestException,
 )
+from app.core.interactors.statistics import StatisticsInteractor
+from app.core.interactors.transaction import TransactionInteractor
+from app.core.interactors.user import UserInteractor
 from app.core.interactors.wallet import WalletInteractor
 from app.core.models.currency import CurrencyRate
+from app.core.models.statistics import Statistics
 from app.core.models.user import User
 from app.core.models.wallet import DefaultWallet, Wallet
+from app.core.schemas.transaction import TransactionRequest
 from app.core.schemas.wallet import WalletResponseBuilder
 from app.core.security.api_key_generator import ApiKey, ApiKeyGenerator
+from app.infra.repositories.inmemory.statistics import InMemoryStatisticsRepository
+from app.infra.repositories.inmemory.transaction import InMemoryTransactionRepository
+from app.infra.repositories.inmemory.user import InMemoryUserRepository
 from app.infra.repositories.inmemory.wallet import InMemoryWalletRepository
+from app.runner.setup import TEST_COMMISSION_PERCENT
 
 
 def test_wallet_interactor() -> None:
@@ -27,6 +37,63 @@ def test_wallet_interactor() -> None:
                 assert False
             except MaximumWalletAmountReachedException:
                 pass
+
+
+def assert_statistics(stats: Statistics, profit: int, total: int) -> None:
+    assert stats.profit == profit
+    assert stats.total_transactions == total
+
+
+def test_statistics_interactor() -> None:
+    interactor = StatisticsInteractor(InMemoryStatisticsRepository())
+    assert_statistics(interactor.get_statistics(), 0, 0)
+    interactor.log_transaction_commission(500)
+    assert_statistics(interactor.get_statistics(), 500, 1)
+    interactor.log_transaction_commission(400)
+    assert_statistics(interactor.get_statistics(), 900, 2)
+
+
+def create_transaction(
+    from_wallet: int, to_wallet: int, amount: int
+) -> TransactionRequest:
+    return TransactionRequest(
+        from_wallet=from_wallet, to_wallet=to_wallet, amount=amount
+    )
+
+
+def test_transactions_interactor() -> None:
+    interactor = TransactionInteractor(
+        InMemoryTransactionRepository(),
+        InMemoryWalletRepository(),
+        TransactionCalculator(TEST_COMMISSION_PERCENT),
+    )
+    user1 = User(0, ApiKey("key1"))
+    user2 = User(1, ApiKey("key2"))
+    interactor.wallet_repository.add_wallet(Wallet(0, 0, 1000))
+    interactor.wallet_repository.add_wallet(Wallet(1, 0, 500))
+    interactor.wallet_repository.add_wallet(Wallet(2, 1, 500))
+    assert len(interactor.get_all_transactions()) == 0
+    with pytest.raises(NotEnoughMoneyException):
+        assert interactor.create_transaction(user1, create_transaction(0, 1, 1001))
+    with pytest.raises(WrongWalletRequestException):
+        assert interactor.create_transaction(user2, create_transaction(0, 1, 1001))
+    assert interactor.create_transaction(user1, create_transaction(0, 1, 500)) == 0
+    assert (
+        interactor.create_transaction(user2, create_transaction(2, 0, 100))
+        == 100 * TEST_COMMISSION_PERCENT
+    )
+    assert interactor.wallet_repository.get_wallet(0).balance == 550
+    assert interactor.wallet_repository.get_wallet(1).balance == 1000
+    assert interactor.wallet_repository.get_wallet(2).balance == 400
+
+
+def test_user_creation() -> None:
+    interactor = UserInteractor(InMemoryUserRepository())
+    wrong_key = ApiKey("test")
+    assert interactor.get_user(wrong_key) is None
+    key = interactor.create_user()
+    assert interactor.get_user(key) is not None
+    assert interactor.get_user(wrong_key) is None
 
 
 def test_wallet_response_creator() -> None:
