@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional, Protocol
 
+from app.core.const import Config
 from app.core.exceptions import WrongWalletRequestException
 from app.core.models.user import User
 from app.core.models.wallet import DefaultWallet, Wallet
@@ -17,11 +18,11 @@ class IWalletInterceptor(Protocol):
 
 @dataclass
 class WalletInterceptor(IWalletInterceptor):
-    MAX_WALLETS = 3
     wallet_repository: IWalletRepository
+    max_wallets: int = Config.MAX_WALLETS_TO_USER
 
     def create_wallet(self, user: User) -> Optional[Wallet]:
-        if len(self.wallet_repository.get_wallets(user)) == self.MAX_WALLETS:
+        if len(self.wallet_repository.get_wallets(user)) == self.max_wallets:
             return None
         return self.wallet_repository.add_wallet(DefaultWallet(user_id=user.id))
 

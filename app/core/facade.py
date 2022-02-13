@@ -2,21 +2,17 @@ from dataclasses import dataclass, field
 from functools import wraps
 from typing import Any, Optional, Protocol
 
-from app.core.interceptors.rate_converter import (  # CachedRateConverter,
-    CurrencyRate,
-    IRateConverter,
-    SatoshiRateConverter,
-)
-from app.core.interceptors.transaction import (
-    IStatisticsRepository,
-    ITransactionInterceptor,
-)
+from app.core.interceptors.statistics import IStatisticsInterceptor
+from app.core.interceptors.transaction import ITransactionInterceptor
 from app.core.interceptors.user import IUserInterceptor
 from app.core.interceptors.wallet import IWalletInterceptor
+from app.core.models.currency import CurrencyRate
 from app.core.models.statistics import Statistics
 from app.core.models.transaction import Transaction
 from app.core.models.user import User
 from app.core.models.wallet import Wallet
+from app.core.rate_converter import IRateConverter, SatoshiRateConverter
+from app.core.repositories import IStatisticsRepository
 from app.core.schemas.transaction import TransactionRequest
 from app.core.security.api_key_generator import ApiKey
 
@@ -64,25 +60,6 @@ class IFacade(Protocol):
 
     def get_statistics(self) -> Statistics:
         pass
-
-
-class IStatisticsInterceptor(Protocol):
-    def log_transaction_commission(self, commission: int) -> None:
-        pass
-
-    def get_statistics(self) -> Statistics:
-        pass
-
-
-@dataclass
-class StatisticsInterceptor(IStatisticsInterceptor):
-    statistics_repository: IStatisticsRepository
-
-    def log_transaction_commission(self, commission: int) -> None:
-        self.statistics_repository.record_transaction(commission)
-
-    def get_statistics(self) -> Statistics:
-        return self.statistics_repository.get_statistics()
 
 
 @dataclass

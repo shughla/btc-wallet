@@ -4,7 +4,7 @@ from sqlite3 import Connection
 from app.core.models.transaction import DefaultTransaction
 from app.core.models.user import User
 from app.core.models.wallet import DefaultWallet
-from app.core.repositories import IWalletRepository, ITransactionRepository
+from app.core.repositories import ITransactionRepository, IWalletRepository
 from app.core.security.api_key_generator import ApiKey
 from app.infra.repositories.inmemory.transaction import InMemoryTransactionRepository
 from app.infra.repositories.inmemory.user import InMemoryUserRepository
@@ -48,11 +48,11 @@ def test_repository(
 
 
 def test_transaction_with_money(
-        repo: ITransactionRepository = InMemoryTransactionRepository(),
+    repo: ITransactionRepository = InMemoryTransactionRepository(),
 ) -> None:
     repo_wallet = InMemoryWalletRepository()
     wallet = DefaultWallet(0)
-    wallet = repo_wallet.add_wallet(wallet)
+    repo_wallet.add_wallet(wallet)
     wallet.balance = 2000
     assert len(repo.find_transaction_by_wallet(wallet.address)) == 0
     repo.add_transaction(DefaultTransaction(wallet.address, wallet.address, 200, 10))

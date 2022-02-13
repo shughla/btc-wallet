@@ -1,13 +1,13 @@
 import pytest
 
+from app.core.calculator import TransactionCalculator
 from app.core.exceptions import NotEnoughMoneyException
-from app.core.interceptors.rate_converter import CurrencyRate
-from app.core.interceptors.transaction import TransactionCalculator
 from app.core.interceptors.wallet import WalletInterceptor
+from app.core.models.currency import CurrencyRate
 from app.core.models.user import User
 from app.core.models.wallet import DefaultWallet, Wallet
 from app.core.schemas.wallet import WalletResponseBuilder
-from app.core.security.api_key_generator import ApiKey
+from app.core.security.api_key_generator import ApiKey, ApiKeyGenerator
 from app.infra.repositories.inmemory.wallet import InMemoryWalletRepository
 
 
@@ -62,3 +62,12 @@ def test_transaction_commission() -> None:
         assert calculator.get_balances(10**15, wallet1, wallet1)
         assert calculator.get_balances(10**15, wallet1, wallet2)
         assert calculator.get_balances(10**15, wallet1, wallet3)
+
+
+def test_default_generator() -> None:
+    keys = set()
+    generator = ApiKeyGenerator()
+    for i in range(10000):
+        key = generator.generate_api_key()
+        assert key not in keys
+        keys.add(key)
