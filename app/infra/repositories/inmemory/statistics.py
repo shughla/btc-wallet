@@ -26,7 +26,7 @@ class FileStatisticsRepository(InMemoryStatisticsRepository):
             self._persist__()
 
     def _to_string(self) -> str:
-        return json.dumps(self.statistics)
+        return json.dumps(self.statistics.__dict__)
 
     def _read_file(self) -> Any:
         with open(self.file_path, "r") as f:

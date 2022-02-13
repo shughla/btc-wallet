@@ -4,6 +4,8 @@ from typing import Any
 from starlette.testclient import TestClient
 
 from app.core.const import Config
+from app.core.models.currency import Currency
+from app.core.rate_converter import SatoshiRateConverter
 from app.tests.setup import TEST_COMMISSION_PERCENT, TestAppFactory
 
 appFactory = TestAppFactory()
@@ -28,7 +30,7 @@ def test_get_items() -> None:
     response = client.post("/user")
     assert response.status_code == HTTPStatus.CREATED
     assert (
-        len(response.json()["api_key"]) >= 16
+            len(response.json()["api_key"]) >= 16
     )  # key should be at least 16 symbols for randomness
 
 
@@ -85,7 +87,7 @@ def test_transaction_limit() -> None:
 
 
 def assert_equal_balances(
-    key_one: str, key_two: str, wallet_address_one: int, wallet_address_two: int
+        key_one: str, key_two: str, wallet_address_one: int, wallet_address_two: int
 ) -> None:
     response = client.get(
         f"/wallet/{wallet_address_one}", headers={"Authorization": key_one}
@@ -164,3 +166,9 @@ def test_statistics_logging() -> None:
     response = client.post("/statistics", headers={"Authorization": Config.ADMIN_KEY})
     assert response.json()["profit"] == profit + total_commission
     assert response.json()["total_transactions"] == total_transactions + new_requests
+
+
+def test_rate_converter() -> None:
+    converter = SatoshiRateConverter()
+    currency_rate = converter.get_rate(Currency.BTC)
+    assert currency_rate.rate * Config.BTC_TO_SATOSHI == 1

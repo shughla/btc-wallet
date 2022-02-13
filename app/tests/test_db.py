@@ -6,11 +6,14 @@ from app.core.models.user import User
 from app.core.models.wallet import DefaultWallet
 from app.core.repositories import ITransactionRepository, IWalletRepository
 from app.core.security.api_key_generator import ApiKey
+from app.infra.repositories.inmemory.statistics import FileStatisticsRepository
 from app.infra.repositories.inmemory.transaction import InMemoryTransactionRepository
 from app.infra.repositories.inmemory.user import InMemoryUserRepository
 from app.infra.repositories.inmemory.wallet import InMemoryWalletRepository
+from app.infra.repositories.sqlite.statistics import SQLiteStatisticsRepository
 from app.infra.repositories.sqlite.transaction import SQLiteTransactionRepository
 from app.infra.repositories.sqlite.user import SQLiteUserRepository
+from app.infra.repositories.sqlite.utils import get_cursor
 from app.infra.repositories.sqlite.wallet import SQLiteWalletRepository
 
 
@@ -34,7 +37,7 @@ def test_sqlite_user_repository() -> None:
     assert repo.find(key) is not None
 
 
-def test_repository(
+def test_wallet_repository(
     repo: IWalletRepository = InMemoryWalletRepository(),
 ) -> None:
     user = User(0, ApiKey("key"))
@@ -60,8 +63,29 @@ def test_transaction_with_money(
 
 
 def test_sqlite_wallet_repository() -> None:
-    test_repository(SQLiteWalletRepository(get_connection()))
+    test_wallet_repository(SQLiteWalletRepository(get_connection()))
 
 
 def test_sqlite_transaction_repository() -> None:
     test_transaction_with_money(SQLiteTransactionRepository(get_connection()))
+
+
+def test_statistics_repository() -> None:
+    # remove table if exists
+    connection = get_connection()
+    with get_cursor(connection) as cursor:
+        cursor.execute("DROP TABLE IF EXISTS statistics")
+    sqlite_repo = SQLiteStatisticsRepository(connection)
+
+    path = "test-statistics.json"
+    # remove file if exists
+    import os
+    if os.path.exists(path):
+        os.remove(path)
+
+    file_repo = FileStatisticsRepository(path)
+    assert sqlite_repo.get_statistics() == file_repo.get_statistics()
+    commission = 100
+    sqlite_repo.record_transaction(commission)
+    file_repo.record_transaction(commission)
+    assert sqlite_repo.get_statistics() == file_repo.get_statistics()

@@ -8,3 +8,5 @@ class Config:
     MAX_WALLETS_TO_USER = 3
 
     ADMIN_KEY = "UNBROKEN"
+
+    DATABASE_NAME = "sqlite.db"
