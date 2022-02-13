@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 
 from pydantic import BaseModel
 
-from app.core.interceptors.rate_converter import CurrencyRate
+from app.core.models.currency import CurrencyRate
 from app.core.models.wallet import Wallet
 
 

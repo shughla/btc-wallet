@@ -1,5 +1,6 @@
 from typing import Optional, Protocol
 
+from app.core.models.statistics import Statistics
 from app.core.models.transaction import Transaction
 from app.core.models.user import User
 from app.core.models.wallet import Wallet
@@ -36,4 +37,12 @@ class ITransactionRepository(Protocol):
         pass
 
     def find_transaction_by_wallet(self, address: int) -> list[Transaction]:
+        pass
+
+
+class IStatisticsRepository(Protocol):
+    def record_transaction(self, commission: int) -> None:
+        pass
+
+    def get_statistics(self) -> Statistics:
         pass

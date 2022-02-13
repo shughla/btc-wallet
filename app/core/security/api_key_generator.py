@@ -16,12 +16,3 @@ class IApiKeyGenerator(Protocol):
 class ApiKeyGenerator(IApiKeyGenerator):
     def generate_api_key(self) -> ApiKey:
         return ApiKey(secrets.token_urlsafe(16))
-
-
-def test_default_generator() -> None:
-    keys = set()
-    generator = ApiKeyGenerator()
-    for i in range(10000):
-        key = generator.generate_api_key()
-        assert key not in keys
-        keys.add(key)

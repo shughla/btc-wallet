@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from app.core.exceptions import WrongWalletRequestException
 from app.core.facade import IFacade
-from app.core.interceptors.rate_converter import Currency
+from app.core.models.currency import Currency
 from app.core.models.transaction import Transaction
 from app.core.models.user import User
 from app.core.models.wallet import Wallet

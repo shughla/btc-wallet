@@ -2,12 +2,28 @@
 POST  localhost:8000/user
 accept: application/json
 
+> {% client.global.set("auth_token", response.body.api_key); %}
 ###
 
 POST localhost:8000/wallet
 accept: application/json
-api-key: Ixg0MKbsFkUDGHqP3M7OhQ
+Authorization: {{ auth_token }}
+
+> {% client.global.set("address", response.body.address); %}
 
 ###
 
 
+###
+GET localhost:8000/wallet/{{address}}
+accept: application/json
+Authorization: {{auth_token}}
+
+###
+
+GET localhost:8000/wallet/{{address}}/transaction
+
+accept: application/json
+Authorization: {{auth_token}}
+
+###

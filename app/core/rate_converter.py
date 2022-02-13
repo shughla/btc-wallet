@@ -3,24 +3,13 @@ from datetime import datetime, timedelta
 
 import requests
 
-
-class Currency:
-    USD = "USD"
-    BTC = "BTC"
-
-
-@dataclass(frozen=True)
-class CurrencyRate:
-    currency: str
-    rate: float
+from app.core.const import Config
+from app.core.models.currency import Currency, CurrencyRate
 
 
 class IRateConverter:
     def get_rate(self, currency: str) -> CurrencyRate:
         pass
-
-
-BTC_FRACTION = float(10**-8)
 
 
 class SatoshiRateConverter(IRateConverter):
@@ -33,20 +22,9 @@ class SatoshiRateConverter(IRateConverter):
         response = requests.get(quote_url)
         btc_value = response.json().get(currency.upper())
         amount = 1
-        fiat_value = float(amount * BTC_FRACTION) * float(btc_value)
+        fiat_value = float(amount / Config.BTC_TO_SATOSHI) * float(btc_value)
         currency_rate = CurrencyRate(currency=currency, rate=fiat_value)
         return currency_rate
-
-
-@dataclass
-class DummySatoshiRateConverter(IRateConverter):
-    custom_rate: float = 1.5
-
-    def get_rate(self, currency: str) -> CurrencyRate:
-        if currency == "BTC":
-            return CurrencyRate("BTC", BTC_FRACTION)
-        else:
-            return CurrencyRate(currency, self.custom_rate)
 
 
 cache: dict[str, tuple[CurrencyRate, datetime]] = dict()
