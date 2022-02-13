@@ -1,15 +1,21 @@
+# Creates example user, creates wallet and gets all its current transactions
+
 
 POST  localhost:8000/user
 accept: application/json
 
-> {% client.global.set("auth_token", response.body.api_key); %}
+> {% client.global.set("api_key", response.body.api_key); %}
 ###
 
 POST localhost:8000/wallet
 accept: application/json
-Authorization: {{ auth_token }}
+api-key: {{ api_key }}
 
-> {% client.global.set("address", response.body.address); %}
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 201, "error code not 201");
+});
+client.global.set("address", response.body.address); %}
 
 ###
 
@@ -17,13 +23,23 @@ Authorization: {{ auth_token }}
 ###
 GET localhost:8000/wallet/{{address}}
 accept: application/json
-Authorization: {{auth_token}}
+api-key: {{api_key}}
 
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "error code not 200");
+});
+%}
 ###
 
 GET localhost:8000/wallet/{{address}}/transaction
-
 accept: application/json
-Authorization: {{auth_token}}
+api-key: {{api_key}}
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "error code not 209");
+});
+%}
 
 ###
