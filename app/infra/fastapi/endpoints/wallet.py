@@ -2,7 +2,7 @@ from http import HTTPStatus
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from app.core.exceptions import WrongWalletRequestException
+from app.core.exceptions import WalletNotFoundException, WrongWalletRequestException
 from app.core.facade import IFacade
 from app.core.models.currency import Currency
 from app.core.models.transaction import Transaction
@@ -34,8 +34,8 @@ def get_wallet(
     try:
         wallet = facade.get_wallet(user, address)
         return get_wallet_response(facade, wallet)
-    except WrongWalletRequestException:
-        raise HTTPException(HTTPStatus.BAD_REQUEST)
+    except (WrongWalletRequestException, WalletNotFoundException) as e:
+        raise HTTPException(HTTPStatus.BAD_REQUEST, detail=str(e))
 
 
 @router.get(
@@ -50,16 +50,16 @@ def get_wallet_transactions(
 ) -> list[Transaction]:
     try:
         return facade.get_wallet_transactions(user, address)
-    except WrongWalletRequestException:
-        raise HTTPException(HTTPStatus.BAD_REQUEST)
+    except WrongWalletRequestException as e:
+        raise HTTPException(HTTPStatus.BAD_REQUEST, detail=str(e))
 
 
 def get_wallet_response(facade: IFacade, wallet: Wallet) -> WalletResponse:
-    satoshis_to_btc = facade.get_satoshi_rate(Currency.BTC)
-    satoshis_to_usd = facade.get_satoshi_rate(Currency.USD)
+    satoshi_to_btc = facade.get_satoshi_rate(Currency.BTC)
+    satoshi_to_usd = facade.get_satoshi_rate(Currency.USD)
     return (
         WalletResponseBuilder(wallet)
-        .with_currency(satoshis_to_usd)
-        .with_currency(satoshis_to_btc)
+        .with_currency(satoshi_to_usd)
+        .with_currency(satoshi_to_btc)
         .create()
     )

@@ -52,7 +52,7 @@ class IFacade(Protocol):
     def create_transaction(self, user: User, request: TransactionRequest) -> int:
         pass
 
-    def get_all_transaction(self, user: User) -> list[Transaction]:
+    def get_all_transactions(self) -> list[Transaction]:
         pass
 
     def get_wallet_transactions(self, user: User, address: int) -> list[Transaction]:
@@ -89,8 +89,8 @@ class Facade(IFacade):
     def create_transaction(self, user: User, request: TransactionRequest) -> int:
         return self.transaction_interceptor.create_transaction(user, request)
 
-    def get_all_transaction(self, user: User) -> list[Transaction]:
-        return self.transaction_interceptor.get_all_transaction(user)
+    def get_all_transactions(self) -> list[Transaction]:
+        return self.transaction_interceptor.get_all_transactions()
 
     def get_wallet_transactions(self, user: User, address: int) -> list[Transaction]:
         return self.transaction_interceptor.get_wallet_transactions(user, address)

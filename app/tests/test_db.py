@@ -1,3 +1,4 @@
+import os
 import sqlite3
 from sqlite3 import Connection
 
@@ -79,7 +80,6 @@ def test_statistics_repository() -> None:
 
     path = "test-statistics.json"
     # remove file if exists
-    import os
     if os.path.exists(path):
         os.remove(path)
 
@@ -89,3 +89,5 @@ def test_statistics_repository() -> None:
     sqlite_repo.record_transaction(commission)
     file_repo.record_transaction(commission)
     assert sqlite_repo.get_statistics() == file_repo.get_statistics()
+    if os.path.exists(path):
+        os.remove(path)
