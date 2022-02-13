@@ -2,10 +2,10 @@ from dataclasses import dataclass, field
 from functools import wraps
 from typing import Any, Optional, Protocol
 
-from app.core.interceptors.statistics import IStatisticsInterceptor
-from app.core.interceptors.transaction import ITransactionInterceptor
-from app.core.interceptors.user import IUserInterceptor
-from app.core.interceptors.wallet import IWalletInterceptor
+from app.core.interactors.statistics import IStatisticsInteractor
+from app.core.interactors.transaction import ITransactionInteractor
+from app.core.interactors.user import IUserInteractor
+from app.core.interactors.wallet import IWalletInteractor
 from app.core.models.currency import CurrencyRate
 from app.core.models.statistics import Statistics
 from app.core.models.transaction import Transaction
@@ -27,7 +27,7 @@ def log_transaction(func: Any) -> Any:
         commission: int = func(
             self, user, request
         )  # throws exception if transaction fails
-        self.statistics_interceptor.log_transaction_commission(commission)
+        self.statistics_interactor.log_transaction_commission(commission)
         return commission
 
     return transaction_decorator
@@ -64,36 +64,36 @@ class IFacade(Protocol):
 
 @dataclass
 class Facade(IFacade):
-    user_interceptor: IUserInterceptor
-    wallet_interceptor: IWalletInterceptor
-    transaction_interceptor: ITransactionInterceptor
-    statistics_interceptor: IStatisticsInterceptor
+    user_interactor: IUserInteractor
+    wallet_interactor: IWalletInteractor
+    transaction_interactor: ITransactionInteractor
+    statistics_interactor: IStatisticsInteractor
     rate_converter: IRateConverter = field(default_factory=SatoshiRateConverter)
 
     def create_user(self) -> ApiKey:
-        return self.user_interceptor.create_user()
+        return self.user_interactor.create_user()
 
     def create_wallet(self, user: User) -> Optional[Wallet]:
-        return self.wallet_interceptor.create_wallet(user)
+        return self.wallet_interactor.create_wallet(user)
 
     def authenticate(self, api_key: ApiKey) -> Optional[User]:
-        return self.user_interceptor.get_user(api_key)
+        return self.user_interactor.get_user(api_key)
 
     def get_satoshi_rate(self, currency: str) -> CurrencyRate:
         return self.rate_converter.get_rate(currency)
 
     def get_wallet(self, user: User, address: int) -> Wallet:
-        return self.wallet_interceptor.get_wallet(user, address)
+        return self.wallet_interactor.get_wallet(user, address)
 
     @log_transaction
     def create_transaction(self, user: User, request: TransactionRequest) -> int:
-        return self.transaction_interceptor.create_transaction(user, request)
+        return self.transaction_interactor.create_transaction(user, request)
 
     def get_all_transactions(self) -> list[Transaction]:
-        return self.transaction_interceptor.get_all_transactions()
+        return self.transaction_interactor.get_all_transactions()
 
     def get_wallet_transactions(self, user: User, address: int) -> list[Transaction]:
-        return self.transaction_interceptor.get_wallet_transactions(user, address)
+        return self.transaction_interactor.get_wallet_transactions(user, address)
 
     def get_statistics(self) -> Statistics:
-        return self.statistics_interceptor.get_statistics()
+        return self.statistics_interactor.get_statistics()

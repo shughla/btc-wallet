@@ -5,7 +5,7 @@ from app.core.models.statistics import Statistics
 from app.core.repositories import IStatisticsRepository
 
 
-class IStatisticsInterceptor(Protocol):
+class IStatisticsInteractor(Protocol):
     def log_transaction_commission(self, commission: int) -> None:
         pass
 
@@ -14,7 +14,7 @@ class IStatisticsInterceptor(Protocol):
 
 
 @dataclass
-class StatisticsInterceptor(IStatisticsInterceptor):
+class StatisticsInteractor(IStatisticsInteractor):
     statistics_repository: IStatisticsRepository
 
     def log_transaction_commission(self, commission: int) -> None:

@@ -11,7 +11,7 @@ from app.core.models.wallet import DefaultWallet, Wallet
 from app.core.repositories import IWalletRepository
 
 
-class IWalletInterceptor(Protocol):
+class IWalletInteractor(Protocol):
     def create_wallet(self, user: User) -> Optional[Wallet]:
         pass
 
@@ -20,7 +20,7 @@ class IWalletInterceptor(Protocol):
 
 
 @dataclass
-class WalletInterceptor(IWalletInterceptor):
+class WalletInteractor(IWalletInteractor):
     wallet_repository: IWalletRepository
     max_wallets: int = Config.MAX_WALLETS_TO_USER
 

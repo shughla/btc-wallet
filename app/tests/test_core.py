@@ -5,7 +5,7 @@ from app.core.exceptions import (
     MaximumWalletAmountReachedException,
     NotEnoughMoneyException,
 )
-from app.core.interceptors.wallet import WalletInterceptor
+from app.core.interactors.wallet import WalletInteractor
 from app.core.models.currency import CurrencyRate
 from app.core.models.user import User
 from app.core.models.wallet import DefaultWallet, Wallet
@@ -14,16 +14,16 @@ from app.core.security.api_key_generator import ApiKey, ApiKeyGenerator
 from app.infra.repositories.inmemory.wallet import InMemoryWalletRepository
 
 
-def test_wallet_interceptor() -> None:
+def test_wallet_interactor() -> None:
     user = User(0, ApiKey("asd"))
     max_wallets = 5
-    interceptor = WalletInterceptor(InMemoryWalletRepository(), max_wallets)
+    interactor = WalletInteractor(InMemoryWalletRepository(), max_wallets)
     for i in range(8):
         if i < max_wallets:
-            interceptor.create_wallet(user)
+            interactor.create_wallet(user)
         else:
             try:
-                interceptor.create_wallet(user)
+                interactor.create_wallet(user)
                 assert False
             except MaximumWalletAmountReachedException:
                 pass

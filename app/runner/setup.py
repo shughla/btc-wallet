@@ -1,13 +1,13 @@
-from typing import Protocol
+from abc import ABC, abstractmethod
 
 from fastapi import FastAPI
 
 from app.core.calculator import TransactionCalculator
 from app.core.facade import Facade
-from app.core.interceptors.statistics import StatisticsInterceptor
-from app.core.interceptors.transaction import TransactionInterceptor
-from app.core.interceptors.user import UserInterceptor
-from app.core.interceptors.wallet import WalletInterceptor
+from app.core.interactors.statistics import StatisticsInteractor
+from app.core.interactors.transaction import TransactionInteractor
+from app.core.interactors.user import UserInteractor
+from app.core.interactors.wallet import WalletInteractor
 from app.core.security.api_key_generator import ApiKeyGenerator
 from app.infra.fastapi.api import api_router
 from app.infra.repositories.inmemory.statistics import InMemoryStatisticsRepository
@@ -22,26 +22,31 @@ from app.infra.repositories.sqlite.wallet import SQLiteWalletRepository
 from app.tests.dummies import DummySatoshiRateConverter
 
 
-class AppFactory(Protocol):
+class AppFactory(ABC):
     def create_app(self) -> FastAPI:
+        app = FastAPI()
+        app = self.change_app(app)
+        app.include_router(api_router)
+        return app
+
+    @abstractmethod
+    def change_app(self, app: FastAPI) -> FastAPI:
         pass
 
 
 class DevelopmentAppFactory(AppFactory):
-    def create_app(self) -> FastAPI:
-        app = FastAPI()
+    def change_app(self, app: FastAPI) -> FastAPI:
         connection = get_connection()
         wallet_repository = SQLiteWalletRepository(connection)
-        app.state.facade = Facade(
-            UserInterceptor(SQLiteUserRepository(connection)),
-            WalletInterceptor(wallet_repository),
-            TransactionInterceptor(
-                SQLiteTransactionRepository(connection),
-                wallet_repository,
-            ),
-            StatisticsInterceptor(SQLiteStatisticsRepository(connection)),
+        user_interactor = UserInteractor(SQLiteUserRepository(connection))
+        wallet_interactor = WalletInteractor(wallet_repository)
+        transaction_interactor = TransactionInteractor(
+            SQLiteTransactionRepository(connection), wallet_repository
         )
-        app.include_router(api_router)
+        stats_interactor = StatisticsInteractor(SQLiteStatisticsRepository(connection))
+        app.state.facade = Facade(
+            user_interactor, wallet_interactor, transaction_interactor, stats_interactor
+        )
         return app
 
 
@@ -49,19 +54,22 @@ TEST_COMMISSION_PERCENT = 0.5
 
 
 class TestAppFactory(AppFactory):
-    def create_app(self) -> FastAPI:
-        app = FastAPI()
+    def change_app(self, app: FastAPI) -> FastAPI:
         wallet_repository = InMemoryWalletRepository()
-        app.state.facade = Facade(
-            UserInterceptor(InMemoryUserRepository(), ApiKeyGenerator()),
-            WalletInterceptor(wallet_repository),
-            TransactionInterceptor(
-                InMemoryTransactionRepository(),
-                wallet_repository,
-                TransactionCalculator(TEST_COMMISSION_PERCENT),
-            ),
-            StatisticsInterceptor(InMemoryStatisticsRepository()),
-            DummySatoshiRateConverter(),
+        user_interactor = UserInteractor(InMemoryUserRepository(), ApiKeyGenerator())
+        wallet_interactor = WalletInteractor(wallet_repository)
+        transaction_interactor = TransactionInteractor(
+            InMemoryTransactionRepository(),
+            wallet_repository,
+            TransactionCalculator(TEST_COMMISSION_PERCENT),
         )
-        app.include_router(api_router)
+        stats_interactor = StatisticsInteractor(InMemoryStatisticsRepository())
+        converter = DummySatoshiRateConverter()
+        app.state.facade = Facade(
+            user_interactor,
+            wallet_interactor,
+            transaction_interactor,
+            stats_interactor,
+            converter,
+        )
         return app

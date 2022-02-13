@@ -8,7 +8,7 @@ from app.core.repositories import ITransactionRepository, IWalletRepository
 from app.core.schemas.transaction import TransactionRequest
 
 
-class ITransactionInterceptor:
+class ITransactionInteractor:
     def create_transaction(self, user: User, request: TransactionRequest) -> int:
         pass
 
@@ -20,7 +20,7 @@ class ITransactionInterceptor:
 
 
 @dataclass
-class TransactionInterceptor(ITransactionInterceptor):
+class TransactionInteractor(ITransactionInteractor):
     transaction_repository: ITransactionRepository
     wallet_repository: IWalletRepository
     calculator: ICommissionCalculator = field(default_factory=TransactionCalculator)

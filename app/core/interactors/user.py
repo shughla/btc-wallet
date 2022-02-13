@@ -11,7 +11,7 @@ from app.core.security.api_key_generator import (
 )
 
 
-class IUserInterceptor(Protocol):
+class IUserInteractor(Protocol):
     def create_user(self) -> ApiKey:
         pass
 
@@ -20,7 +20,7 @@ class IUserInterceptor(Protocol):
 
 
 @dataclass
-class UserInterceptor(IUserInterceptor):
+class UserInteractor(IUserInteractor):
     repository: IUserRepository
     generator: IApiKeyGenerator = field(default_factory=ApiKeyGenerator)
 
