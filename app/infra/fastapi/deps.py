@@ -14,16 +14,16 @@ def get_facade(request: Request) -> Any:
     return request.app.state.facade
 
 
-def can_access_admin(authorization: str = Header(None)) -> bool:
-    if authorization == Config.ADMIN_KEY:
+def can_access_admin(api_key: str = Header(None)) -> bool:
+    if api_key == Config.ADMIN_KEY:
         return True
     return False
 
 
 def get_authenticated_user(
-    facade: IFacade = Depends(get_facade), authorization: str = Header(None)
+    facade: IFacade = Depends(get_facade), api_key: str = Header(None)
 ) -> User:
-    user = facade.authenticate(ApiKey(authorization))
+    user = facade.authenticate(ApiKey(api_key))
     if user is None:
         raise HTTPException(HTTPStatus.UNAUTHORIZED)
     else:

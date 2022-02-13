@@ -1,6 +1,6 @@
 from sqlite3 import Connection
 
-from app.core.exceptions import WrongWalletRequestException
+from app.core.exceptions import WalletNotFoundException
 from app.core.models.user import User
 from app.core.models.wallet import Wallet
 from app.core.repositories import IWalletRepository
@@ -45,7 +45,7 @@ class SQLiteWalletRepository(IWalletRepository):
             )
             wallet = cursor.fetchone()
             if wallet is None or len(wallet) == 0:
-                raise WrongWalletRequestException()
+                raise WalletNotFoundException(address)
             return Wallet(address=wallet[0], user_id=wallet[1], balance=wallet[2])
 
     def add_wallet(self, wallet: Wallet) -> Wallet:

@@ -1,15 +1,13 @@
+import sqlite3
 from contextlib import contextmanager
 from sqlite3 import Connection, Cursor
 from typing import Generator
 
+from app.core.const import Config
 
-@contextmanager
-def get_connection(path: str) -> Generator[Connection, None, None]:
-    connection = Connection(path, check_same_thread=False)
-    try:
-        yield connection
-    finally:
-        connection.close()
+
+def get_connection(path: str = Config.DATABASE_NAME) -> Connection:
+    return sqlite3.connect(path, check_same_thread=False)
 
 
 @contextmanager

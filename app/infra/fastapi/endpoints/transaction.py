@@ -2,7 +2,11 @@ from http import HTTPStatus
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from app.core.exceptions import NotEnoughMoneyException, WrongWalletRequestException
+from app.core.exceptions import (
+    NotEnoughMoneyException,
+    WalletNotFoundException,
+    WrongWalletRequestException,
+)
 from app.core.facade import IFacade
 from app.core.models.transaction import Transaction
 from app.core.models.user import User
@@ -20,20 +24,19 @@ def create_transaction(
 ) -> int:
     try:
         return facade.create_transaction(user, request)
-    except NotEnoughMoneyException:
-        raise HTTPException(HTTPStatus.BAD_REQUEST)
-    except WrongWalletRequestException:
-        raise HTTPException(HTTPStatus.BAD_REQUEST)
+    except (
+        NotEnoughMoneyException,
+        WrongWalletRequestException,
+        WalletNotFoundException,
+    ) as e:
+        raise HTTPException(HTTPStatus.BAD_REQUEST, detail=str(e))
 
 
 @router.get(
-    "/transaction",
-    status_code=HTTPStatus.OK,
-    response_model=list[TransactionResponse],
-    response_model_exclude_unset=True,
+    "/transaction", status_code=HTTPStatus.OK, response_model=list[TransactionResponse]
 )
 def get_transactions(
-    facade: IFacade = Depends(get_facade), user: User = Depends(get_authenticated_user)
+    facade: IFacade = Depends(get_facade), _: User = Depends(get_authenticated_user)
 ) -> list[Transaction]:
-    transaction = facade.get_all_transaction(user)
-    return transaction
+    transactions = facade.get_all_transactions()
+    return transactions

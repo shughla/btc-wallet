@@ -1,7 +1,10 @@
 import pytest
 
 from app.core.calculator import TransactionCalculator
-from app.core.exceptions import NotEnoughMoneyException
+from app.core.exceptions import (
+    MaximumWalletAmountReachedException,
+    NotEnoughMoneyException,
+)
 from app.core.interceptors.wallet import WalletInterceptor
 from app.core.models.currency import CurrencyRate
 from app.core.models.user import User
@@ -13,13 +16,17 @@ from app.infra.repositories.inmemory.wallet import InMemoryWalletRepository
 
 def test_wallet_interceptor() -> None:
     user = User(0, ApiKey("asd"))
-    interceptor = WalletInterceptor(wallet_repository=InMemoryWalletRepository())
+    max_wallets = 5
+    interceptor = WalletInterceptor(InMemoryWalletRepository(), max_wallets)
     for i in range(8):
-        wallet = interceptor.create_wallet(user)
-        if i < 3:
-            assert wallet is not None
+        if i < max_wallets:
+            interceptor.create_wallet(user)
         else:
-            assert wallet is None
+            try:
+                interceptor.create_wallet(user)
+                assert False
+            except MaximumWalletAmountReachedException:
+                pass
 
 
 def test_wallet_response_creator() -> None:
