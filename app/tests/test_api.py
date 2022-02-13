@@ -45,8 +45,17 @@ def test_get_wallet() -> None:
 
 
 def test_get_wallet_wrong_user() -> None:
-    # todo
-    pass
+    response = client.post("/user")
+    headers = response.json()
+    response = client.post("/wallet", headers={"api-key": headers["api_key"]})
+    address_one = response.json()["address"]
+    response = client.post("/user")
+    headers = response.json()
+    key_second = headers["api_key"]
+    response = client.get(
+        f"/wallet/{address_one}", headers={"api-key": key_second}
+    )
+    assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
 def test_transaction() -> None:
